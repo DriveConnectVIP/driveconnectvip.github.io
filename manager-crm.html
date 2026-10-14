@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveConnect VIP | Advanced Dealer CRM & Operations Suite</title>
+    <!-- FontAwesome & Tailwind CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-main: #090d16;
+            --bg-card: #0f172a;
+            --border-color: #334155;
+            --accent-blue: #2563eb;
+            --accent-cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body { background-color: var(--bg-main); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        .glass-card { background: var(--bg-card); border: 1px solid var(--border-color); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- ================= LEAD DETAIL, NOTEPAD & AI ASSISTANT MODAL ================= -->
+    <div id="lead-modal" class="fixed inset-0 bg-[#090d16]/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-xl max-w-2xl w-full p-6 shadow-2xl border border-[var(--border-color)] space-y-4">
+            <div class="flex justify-between items-center border-b border-[var(--border-color)] pb-3">
+                <div>
+                    <h3 id="modal-lead-name" class="font-bold text-lg text-white">Client Name</h3>
+                    <span id="modal-vip-code" class="text-xs font-mono text-[var(--accent-cyan)]">VIP-XXXX</span>
+                </div>
+                <button onclick="closeLeadModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs text-[var(--text-muted)] bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+                <div><i class="fa-solid fa-envelope mr-1 text-[var(--accent-cyan)]"></i> <span id="modal-lead-email">N/A</span></div>
+                <div><i class="fa-solid fa-phone mr-1 text-[var(--accent-cyan)]"></i> <span id="modal-lead-phone">N/A</span></div>
+                <div class="col-span-2 mt-1"><i class="fa-solid fa-car mr-1 text-[var(--accent-cyan)]"></i> Vehicle Request: <span id="modal-lead-vehicle" class="text-white font-medium">N/A</span></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Left: Pipeline & Notepad -->
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-300">Pipeline Status</label>
+                        <select id="modal-lead-status" class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-lg text-white text-sm focus:outline-none focus:border-[var(--accent-cyan)]">
+                            <option value="Pending">Pending</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Appointment Set">Appointment Set</option>
+                            <option value="Negotiation">Negotiation</option>
+                            <option value="Closed Won">Closed Won</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-300">Client Notepad & Activity Log</label>
+                        <textarea id="modal-lead-notes" rows="3" placeholder="Enter notes about phone calls, test drives..." class="w-full p-3 bg-[#1e293b] border border-[var(--border-color)] rounded-lg text-white text-xs focus:outline-none focus:border-[var(--accent-cyan)] resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- Right: AI Communication Assistant (Aria) -->
+                <div class="bg-blue-950/20 border border-blue-900/50 p-3 rounded-lg flex flex-col justify-between space-y-2">
+                    <div>
+                        <div class="flex items-center space-x-1.5 text-xs font-bold text-[var(--accent-cyan)] mb-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Aria AI Assistant</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Instantly draft qualifying SMS, booking links, or pre-approval follow-ups.</p>
+                    </div>
+                    <div id="ai-suggestion-box" class="bg-slate-900/80 p-2.5 rounded border border-slate-800 text-[11px] text-slate-300 italic min-h-[60px]">
+                        Click a prompt below to generate AI outreach response...
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="generateAiDraft('appointment')" class="bg-blue-900/40 hover:bg-blue-900 text-[var(--accent-cyan)] border border-blue-800 py-1.5 px-2 rounded text-[11px] font-medium transition-all">Schedule Demo</button>
+                        <button onclick="generateAiDraft('financing')" class="bg-blue-900/40 hover:bg-blue-900 text-[var(--accent-cyan)] border border-blue-800 py-1.5 px-2 rounded text-[11px] font-medium transition-all">Financing Info</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-2 border-t border-[var(--border-color)]">
+                <button onclick="closeLeadModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium">Cancel</button>
+                <button onclick="saveLeadChanges()" class="px-5 py-2 bg-[var(--accent-blue)] hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-md">Save & Trigger Automation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= VEHICLE DETAIL & LOT PREP MODAL ================= -->
+    <div id="vehicle-modal" class="fixed inset-0 bg-[#090d16]/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-xl max-w-lg w-full p-6 shadow-2xl border border-[var(--border-color)] space-y-4">
+            <div class="flex justify-between items-center border-b border-[var(--border-color)] pb-3">
+                <h3 id="modal-vehicle-title" class="font-bold text-lg text-white">Vehicle Specs</h3>
+                <button onclick="closeVehicleModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300">
+                <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+                    <div>Price: <span id="modal-vehicle-price" class="text-emerald-400 font-bold"></span></div>
+                    <div>Mileage: <span id="modal-vehicle-mileage" class="text-white"></span></div>
+                    <div>Transmission: <span id="modal-vehicle-transmission" class="text-white"></span></div>
+                    <div>Drivetrain: <span id="modal-vehicle-drivetrain" class="text-white"></span></div>
+                </div>
+                <div class="space-y-1">
+                    <label class="font-semibold text-slate-300">Lot Reconditioning / Prep Status</label>
+                    <select id="modal-vehicle-prep" class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-lg text-white text-sm focus:outline-none focus:border-[var(--accent-cyan)]">
+                        <option value="In Detailing">In Detailing</option>
+                        <option value="Safety Inspection">Safety Inspection</option>
+                        <option value="Frontline Ready">Frontline Ready</option>
+                        <option value="Reserved / Sold">Reserved / Sold</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="font-semibold text-slate-300">Linked Interested Lead</label>
+                    <input type="text" id="modal-vehicle-lead" placeholder="None assigned" class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-lg text-white text-sm focus:outline-none focus:border-[var(--accent-cyan)]">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-3 border-t border-[var(--border-color)]">
+                <button onclick="closeVehicleModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium">Cancel</button>
+                <button onclick="saveVehicleChanges()" class="px-5 py-2 bg-[var(--accent-blue)] hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-md">Update DMS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= NURTURE SEQUENCE CONFIGURATION MODAL ================= -->
+    <div id="nurtureModal" class="fixed inset-0 bg-[#090d16]/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-xl max-w-md w-full p-6 shadow-2xl border border-[var(--border-color)] space-y-4">
+            <div class="flex justify-between items-center border-b border-[var(--border-color)] pb-3">
+                <h3 class="font-bold text-lg text-white"><i class="fa-solid fa-envelope-open-text text-[var(--accent-cyan)] mr-2"></i> 14-Day Nurture Sequence</h3>
+                <button onclick="closeNurtureModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300">
+                <p class="text-[11px] text-slate-400">Automates a 5-touchpoint friendly persuasion campaign over 14 days, featuring custom vehicle specs and photo previews.</p>
+                <div>
+                    <label class="block font-semibold mb-1">Touchpoints (Email Stages):</label>
+                    <input type="number" id="nurtureTouchpoints" value="5" readonly class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-lg text-white text-sm opacity-80 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Duration Window (Days):</label>
+                    <input type="number" id="nurtureDuration" value="14" class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-lg text-white text-sm focus:outline-none focus:border-[var(--accent-cyan)]">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Test Notification Email:</label>
+                    <input type="email" id="nurtureTestEmail" value="gothicafashions@gmail.com" class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-lg text-white text-sm focus:outline-none focus:border-[var(--accent-cyan)]">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-3 border-t border-[var(--border-color)]">
+                <button type="button" onclick="closeNurtureModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium">Cancel</button>
+                <button type="button" onclick="submitNurtureConfig()" class="px-5 py-2 bg-[var(--accent-blue)] hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-md">Save & Activate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN CRM DASHBOARD ================= -->
+    <div id="crm-main-container" class="flex-1 flex flex-col">
+        <!-- Top Navbar with Centered Branding -->
+        <header class="glass-card border-x-0 border-t-0 py-4 px-6 flex justify-between items-center relative">
+            <div class="flex items-center space-x-2 text-xs text-slate-400">
+                <i class="fa-solid fa-shield-car text-[var(--accent-cyan)]"></i> DriveConnect VIP
+            </div>
+
+            <!-- Centered Dealership Name & Perk -->
+            <div class="absolute left-1/2 transform -translate-x-1/2 text-center">
+                <h1 id="display-dealer-name" class="font-extrabold text-xl text-white tracking-wide">Loading Dealership...</h1>
+                <p id="display-dealer-perk" class="text-xs text-[var(--accent-cyan)] font-medium mt-0.5"><i class="fa-solid fa-gift mr-1"></i> Perk: Loading...</p>
+            </div>
+
+            <!-- Right Action Controls -->
+            <div class="flex items-center space-x-3">
+                <span class="text-xs text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-800 flex items-center gap-1.5"><i class="fa-solid fa-circle text-[6px]"></i> Live DMS Sync</span>
+                <button onclick="exitToStorefront()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium py-1.5 px-3 rounded-lg transition-colors flex items-center gap-1.5 border border-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Exit to Showroom
+                </button>
+                <button onclick="exitToStorefront()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 transition-all"><i class="fa-solid fa-right-from-bracket mr-1"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- Navigation Sub-Bar -->
+        <nav class="bg-[#0b1324] border-b border-[var(--border-color)] px-6 py-2 flex space-x-6 text-sm overflow-x-auto">
+            <button onclick="switchTab('pipeline')" id="nav-pipeline" class="text-[var(--accent-cyan)] font-semibold pb-1 border-b-2 border-[var(--accent-cyan)] transition-all whitespace-nowrap"><i class="fa-solid fa-users-line mr-1.5"></i> Leads & Distribution</button>
+            <button onclick="switchTab('inventory')" id="nav-inventory" class="text-slate-400 hover:text-white pb-1 border-b-2 border-transparent transition-all whitespace-nowrap"><i class="fa-solid fa-car-rear mr-1.5"></i> Inventory & DMS</button>
+            <button onclick="switchTab('marketing')" id="nav-marketing" class="text-slate-400 hover:text-white pb-1 border-b-2 border-transparent transition-all whitespace-nowrap"><i class="fa-solid fa-bullhorn mr-1.5"></i> Marketing Automation</button>
+            <button onclick="switchTab('analytics')" id="nav-analytics" class="text-slate-400 hover:text-white pb-1 border-b-2 border-transparent transition-all whitespace-nowrap"><i class="fa-solid fa-chart-line mr-1.5"></i> Analytics & ROI</button>
+            <button onclick="switchTab('service')" id="nav-service" class="text-slate-400 hover:text-white pb-1 border-b-2 border-transparent transition-all whitespace-nowrap"><i class="fa-solid fa-screwdriver-wrench mr-1.5"></i> Service & Retention</button>
+        </nav>
+
+        <!-- Workspace Content Area -->
+        <main class="flex-1 p-6 overflow-x-auto">
+
+            <!-- 1. LEADS & DISTRIBUTION VIEW -->
+            <div id="tab-pipeline" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-md font-semibold text-white">Lead Management & Automated Distribution <span class="text-xs text-slate-400 font-normal ml-2">(Click any lead card to open notepad & AI assistant)</span></h2>
+                    <span id="lead-count-badge" class="text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">0 Active Leads</span>
+                </div>
+
+                <!-- Kanban Columns -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 min-w-[1000px]">
+                    <div class="glass-card rounded-xl p-4 flex flex-col h-[600px]">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-[var(--border-color)]">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Pending</span>
+                            <span id="count-Pending" class="text-xs bg-amber-950/50 text-amber-300 px-2 py-0.5 rounded-full border border-amber-800">0</span>
+                        </div>
+                        <div id="col-Pending" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 flex flex-col h-[600px]">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-[var(--border-color)]">
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Contacted</span>
+                            <span id="count-Contacted" class="text-xs bg-blue-950/50 text-blue-300 px-2 py-0.5 rounded-full border border-blue-800">0</span>
+                        </div>
+                        <div id="col-Contacted" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 flex flex-col h-[600px]">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-[var(--border-color)]">
+                            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Appointment Set</span>
+                            <span id="count-Appointment" class="text-xs bg-cyan-950/50 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-800">0</span>
+                        </div>
+                        <div id="col-Appointment" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 flex flex-col h-[600px]">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-[var(--border-color)]">
+                            <span class="text-xs font-bold uppercase tracking-wider text-purple-400">Negotiation</span>
+                            <span id="count-Negotiation" class="text-xs bg-purple-950/50 text-purple-300 px-2 py-0.5 rounded-full border border-purple-800">0</span>
+                        </div>
+                        <div id="col-Negotiation" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 flex flex-col h-[600px]">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-[var(--border-color)]">
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Closed Won</span>
+                            <span id="count-Closed" class="text-xs bg-emerald-950/50 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-800">0</span>
+                        </div>
+                        <div id="col-Closed" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. INVENTORY & DMS VIEW -->
+            <div id="tab-inventory" class="space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-md font-semibold text-white">Dealership Management System (DMS) - Vehicle & Lot Prep Catalog</h2>
+                    <button onclick="alert('DMS Inventory synchronized successfully with live catalog.')" class="bg-[var(--accent-blue)] text-white text-xs px-3 py-1.5 rounded-lg font-medium shadow"><i class="fa-solid fa-rotate mr-1"></i> Sync DMS Feed</button>
+                </div>
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#162032] border-b border-[var(--border-color)] text-xs text-[var(--text-muted)] uppercase">
+                                <th class="p-4">Vehicle Specs</th>
+                                <th class="p-4">Price</th>
+                                <th class="p-4">Mileage</th>
+                                <th class="p-4">Lot Prep Status</th>
+                                <th class="p-4">Assigned Lead</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-[var(--border-color)] text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. MARKETING AUTOMATION VIEW -->
+            <div id="tab-marketing" class="space-y-4 hidden">
+                <h2 class="text-md font-semibold text-white">Automated Multi-Channel Marketing Campaigns</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 rounded-xl space-y-3">
+                        <div class="text-[var(--accent-cyan)] text-lg"><i class="fa-solid fa-envelope-open-text"></i></div>
+                        <h3 class="font-bold text-white text-sm">14-Day Nurture Sequence</h3>
+                        <p class="text-xs text-[var(--text-muted)]">Automatic 5-touch friendly persuasion sequence sent to web and marketplace leads over 14 days with vehicle specs & images.</p>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-xs">
+                            <span class="text-emerald-400 font-medium">Active (14-Day Drip)</span>
+                            <button onclick="openNurtureModal()" class="text-[var(--accent-cyan)] hover:underline">Configure</button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5 rounded-xl space-y-3">
+                        <div class="text-[var(--accent-cyan)] text-lg"><i class="fa-solid fa-comment-sms"></i></div>
+                        <h3 class="font-bold text-white text-sm">SMS Instant Auto-Responder</h3>
+                        <p class="text-xs text-[var(--text-muted)]">Immediate text message dispatch when a lead submits an inquiry on social media or website.</p>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-xs">
+                            <span class="text-emerald-400 font-medium">Active (98% Delivery)</span>
+                            <button onclick="triggerMarketingAction('configureSMS', { instantResponse: true })" class="text-[var(--accent-cyan)] hover:underline">Configure</button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5 rounded-xl space-y-3">
+                        <div class="text-[var(--accent-cyan)] text-lg"><i class="fa-solid fa-tags"></i></div>
+                        <h3 class="font-bold text-white text-sm">VIP Perk Promotional Blast</h3>
+                        <p class="text-xs text-[var(--text-muted)]">Broadcasts your dealership's exclusive perks and weekend special pricing to local databases.</p>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-xs">
+                            <span class="text-amber-400 font-medium">Ready to Launch</span>
+                            <button onclick="triggerMarketingAction('launchBlast')" class="bg-[var(--accent-blue)] text-white px-3 py-1 rounded text-xs font-semibold">Launch Blast</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. REPORTING & ANALYTICS VIEW -->
+            <div id="tab-analytics" class="space-y-4 hidden">
+                <h2 class="text-md font-semibold text-white">Performance Analytics & Marketing ROI</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-xs text-[var(--text-muted)]">Total Pipeline Leads</div>
+                        <div id="stat-total-leads" class="text-2xl font-extrabold text-white mt-1">0</div>
+                        <div class="text-[10px] text-emerald-400 mt-1"><i class="fa-solid fa-arrow-up"></i> Live Feed Synced</div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-xs text-[var(--text-muted)]">Closed Won Sales</div>
+                        <div id="stat-closed-won" class="text-2xl font-extrabold text-emerald-400 mt-1">0</div>
+                        <div class="text-[10px] text-emerald-400 mt-1">Converted Referrals</div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-xs text-[var(--text-muted)]">Average Response Time</div>
+                        <div class="text-2xl font-extrabold text-white mt-1">4.2 min</div>
+                        <div class="text-[10px] text-cyan-400 mt-1"><i class="fa-solid fa-bolt"></i> AI Automated</div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-xs text-[var(--text-muted)]">DriveConnect VIP ROI</div>
+                        <div id="stat-roi" class="text-2xl font-extrabold text-emerald-400 mt-1">412%</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Attributed Commission Return</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. SERVICE & RETENTION VIEW -->
+            <div id="tab-service" class="space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-md font-semibold text-white">Post-Sale Service & Customer Retention Hub</h2>
+                    <button onclick="triggerServiceReminders()" class="bg-[var(--accent-blue)] text-white text-xs px-3 py-1.5 rounded-lg font-medium shadow"><i class="fa-solid fa-bell mr-1"></i> Send Maintenance Reminders</button>
+                </div>
+                <div class="glass-card p-6 rounded-xl space-y-4">
+                    <p class="text-xs text-[var(--text-muted)]">Closed sales referrals due for routine maintenance. Click any customer to instantly view vehicle info or dispatch a direct service reminder.</p>
+                    <div class="glass-card rounded-xl overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#162032] border-b border-[var(--border-color)] text-xs text-[var(--text-muted)] uppercase">
+                                    <th class="p-4">Customer Name</th>
+                                    <th class="p-4">Contact Info</th>
+                                    <th class="p-4">Purchased Vehicle</th>
+                                    <th class="p-4">Service Status</th>
+                                    <th class="p-4 text-right">Direct Outreach</th>
+                                </tr>
+                            </thead>
+                            <tbody id="service-table-body" class="divide-y divide-[var(--border-color)] text-sm">
+                                <!-- Populated dynamically from Closed Won leads -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const SHOWROOM_API_URL = "https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec";
+
+        let loggedInDealer = "";
+        let crmData = { leads: [], inventory: [], defaultPerk: "" };
+        let activeLeadRowIndex = null;
+        let activeVehicleIndex = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetDealer = urlParams.get('dealer') || localStorage.getItem('activeDealer');
+
+            if (!targetDealer || localStorage.getItem('dealerAuthenticated') !== 'true') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            loggedInDealer = targetDealer;
+            localStorage.setItem('activeDealer', loggedInDealer);
+
+            const nameElem = document.getElementById('display-dealer-name');
+            const perkElem = document.getElementById('display-dealer-perk');
+            if (nameElem) nameElem.textContent = loggedInDealer;
+
+            // Local Development Mock Fallback
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                if (perkElem) perkElem.innerHTML = `<i class="fa-solid fa-gift mr-1"></i> Perk: Local Development Mode`;
+                crmData.leads = [
+                    { rowIndex: 1, Name: "John Doe", Email: "john@example.com", Phone: "555-0192", Vehicle: "2018 Ford Escape", Status: "Pending", VIPCode: "VIP-1029", Notes: "Initial inquiry submitted." },
+                    { rowIndex: 2, Name: "Jane Smith", Email: "jane@example.com", Phone: "555-8491", Vehicle: "Showroom Special", Status: "Contacted", VIPCode: "VIP-3829", Notes: "Called regarding trade-in." },
+                    { rowIndex: 3, Name: "Michael Johnson", Email: "mike@example.com", Phone: "555-3829", Vehicle: "Certified Pre-Owned", Status: "Appointment Set", VIPCode: "VIP-9921", Notes: "Scheduled test drive." },
+                    { rowIndex: 4, Name: "Sarah Connor", Email: "sarah@example.com", Phone: "555-9011", Vehicle: "2020 Chevrolet Equinox", Status: "Closed Won", VIPCode: "VIP-4451", Notes: "Purchased cash. Send 30-day service check." }
+                ];
+                crmData.inventory = [
+                    { Make: "Ford", Model: "Escape", Year: "2018", Price: "16500", Mileage: "42000", Transmission: "Automatic", Drivetrain: "AWD", PrepStatus: "Frontline Ready", AssignedLead: "John Doe" },
+                    { Make: "Chevrolet", Model: "Equinox", Year: "2020", Price: "19200", Mileage: "31000", Transmission: "Automatic", Drivetrain: "FWD", PrepStatus: "Safety Inspection", AssignedLead: "Sarah Connor" }
+                ];
+                crmData.defaultPerk = "Exclusive VIP Concierge Perk (Local Mock)";
+                launchDashboard();
+                return;
+            }
+
+            if (perkElem) perkElem.innerHTML = `<i class="fa-solid fa-gift mr-1"></i> Perk: Connecting to live feed...`;
+
+            try {
+                const queryParams = new URLSearchParams({
+                    action: 'dealerLogin',
+                    dealerName: loggedInDealer,
+                    password: ''
+                });
+
+                const res = await fetch(`${SHOWROOM_API_URL}?${queryParams.toString()}`);
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    crmData.leads = data.leads || [];
+                    crmData.inventory = data.inventory || [];
+                    crmData.defaultPerk = data.defaultPerk || "Exclusive VIP Concierge Perk";
+                    launchDashboard();
+                } else {
+                    if (perkElem) perkElem.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-amber-400"></i> Error: ${data.message || 'Unknown error'}`;
+                }
+            } catch (err) {
+                console.error("Dashboard fetch error:", err);
+                if (perkElem) perkElem.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-amber-400"></i> Server connection error.`;
+            }
+        });
+
+        function exitToStorefront() {
+            localStorage.removeItem('managerLoggedIn');
+            localStorage.removeItem('dealerAuthenticated');
+            window.location.href = 'index.html';
+        }
+
+        function launchDashboard() {
+            const nameElem = document.getElementById('display-dealer-name');
+            const perkElem = document.getElementById('display-dealer-perk');
+
+            if (nameElem) nameElem.textContent = loggedInDealer;
+            if (perkElem) perkElem.innerHTML = `<i class="fa-solid fa-gift mr-1"></i> Perk: ${crmData.defaultPerk}`;
+
+            renderPipeline();
+            renderInventoryTable();
+            renderAnalytics();
+            renderServiceRetention();
+        }
+
+        function switchTab(tab) {
+            const tabs = ['pipeline', 'inventory', 'marketing', 'analytics', 'service'];
+            tabs.forEach(t => {
+                const isCurrent = t === tab;
+                const tabElem = document.getElementById(`tab-${t}`);
+                const navElem = document.getElementById(`nav-${t}`);
+                if (tabElem) tabElem.classList.toggle('hidden', !isCurrent);
+                if (navElem) {
+                    navElem.className = isCurrent
+                        ? "text-[var(--accent-cyan)] font-semibold pb-1 border-b-2 border-[var(--accent-cyan)] transition-all whitespace-nowrap"
+                        : "text-slate-400 hover:text-white pb-1 border-b-2 border-transparent transition-all whitespace-nowrap";
+                }
+            });
+        }
+
+        function renderPipeline() {
+            const columns = {
+                'Pending': document.getElementById('col-Pending'),
+                'Contacted': document.getElementById('col-Contacted'),
+                'Appointment Set': document.getElementById('col-Appointment'),
+                'Negotiation': document.getElementById('col-Negotiation'),
+                'Closed Won': document.getElementById('col-Closed')
+            };
+
+            Object.values(columns).forEach(col => { if (col) col.innerHTML = ''; });
+            let counts = { 'Pending': 0, 'Contacted': 0, 'Appointment Set': 0, 'Negotiation': 0, 'Closed Won': 0 };
+
+            const badgeElem = document.getElementById('lead-count-badge');
+            if (!crmData.leads || !crmData.leads.length) {
+                if (badgeElem) badgeElem.textContent = `0 Active Leads`;
+                return;
+            }
+
+            crmData.leads.forEach(lead => {
+                let status = lead.Status || lead.status || 'Pending';
+                if (status.toLowerCase().includes('appoint')) status = 'Appointment Set';
+                else if (status.toLowerCase().includes('close')) status = 'Closed Won';
+                else if (status.toLowerCase().includes('contact')) status = 'Contacted';
+                else if (status.toLowerCase().includes('negot')) status = 'Negotiation';
+                else if (!counts.hasOwnProperty(status)) status = 'Pending';
+
+                counts[status]++;
+
+                const card = document.createElement('div');
+                card.className = "bg-[#162032] hover:bg-[#1e293b] border border-[var(--border-color)] p-3 rounded-lg shadow-sm space-y-2 text-xs cursor-pointer transition-all";
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    openLeadModal(lead);
+                };
+
+                const guestName = lead.GuestName || lead.Name || 'Valued Guest';
+                const vipCode = lead.VIPCode || 'VIP';
+                const email = lead.Email || 'N/A';
+                const phone = lead.Phone || 'N/A';
+                const vehicle = lead.RequestedVehicle || lead.Vehicle || 'Allocation Request';
+                const notes = lead.Notes || '';
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="font-bold text-white text-sm">${guestName}</span>
+                        <span class="bg-blue-950 text-[var(--accent-cyan)] px-2 py-0.5 rounded font-mono text-[10px] border border-blue-900">${vipCode}</span>
+                    </div>
+                    <div class="text-[var(--text-muted)] space-y-1">
+                        <div><i class="fa-solid fa-envelope mr-1 w-3"></i> ${email}</div>
+                        <div><i class="fa-solid fa-phone mr-1 w-3"></i> ${phone}</div>
+                        <div class="text-white font-medium"><i class="fa-solid fa-car mr-1 w-3 text-[var(--accent-cyan)]"></i> ${vehicle}</div>
+                        ${notes ? `<div class="text-amber-300 truncate mt-1 bg-amber-950/30 px-2 py-1 rounded border border-amber-900/50"><i class="fa-solid fa-note-sticky mr-1"></i> ${notes}</div>` : ''}
+                    </div>
+                `;
+                if (columns[status]) columns[status].appendChild(card);
+            });
+
+            Object.keys(counts).forEach(st => {
+                let keyShort = st.split(' ')[0];
+                const badge = document.getElementById(`count-${keyShort}`);
+                if (badge) badge.textContent = counts[st];
+            });
+            if (badgeElem) badgeElem.textContent = `${crmData.leads.length} Active Leads`;
+        }
+
+        function openLeadModal(lead) {
+            activeLeadRowIndex = lead.rowIndex;
+            document.getElementById('modal-lead-name').textContent = lead.GuestName || lead.Name || 'Valued Guest';
+            document.getElementById('modal-vip-code').textContent = lead.VIPCode || 'VIP';
+            document.getElementById('modal-lead-email').textContent = lead.Email || 'N/A';
+            document.getElementById('modal-lead-phone').textContent = lead.Phone || 'N/A';
+            document.getElementById('modal-lead-vehicle').textContent = lead.RequestedVehicle || lead.Vehicle || 'N/A';
+
+            let currentStatus = lead.Status || lead.status || 'Pending';
+            if (currentStatus.toLowerCase().includes('appoint')) currentStatus = 'Appointment Set';
+            else if (currentStatus.toLowerCase().includes('close')) currentStatus = 'Closed Won';
+            else if (currentStatus.toLowerCase().includes('contact')) currentStatus = 'Contacted';
+            else if (currentStatus.toLowerCase().includes('negot')) currentStatus = 'Negotiation';
+
+            document.getElementById('modal-lead-status').value = currentStatus;
+            document.getElementById('modal-lead-notes').value = lead.Notes || '';
+            document.getElementById('ai-suggestion-box').innerHTML = "Click a prompt below to generate AI outreach response...";
+
+            document.getElementById('lead-modal').classList.remove('hidden');
+            document.getElementById('lead-modal').classList.add('flex');
+        }
+
+        function closeLeadModal() {
+            document.getElementById('lead-modal').classList.add('hidden');
+            document.getElementById('lead-modal').classList.remove('flex');
+            activeLeadRowIndex = null;
+        }
+
+        function generateAiDraft(type) {
+            const guestName = document.getElementById('modal-lead-name').textContent;
+            const vehicle = document.getElementById('modal-lead-vehicle').textContent;
+            const box = document.getElementById('ai-suggestion-box');
+
+            if (type === 'appointment') {
+                box.innerHTML = `Hi ${guestName}, this is ${loggedInDealer}. We have your requested ${vehicle} ready for a VIP test drive. Are you available this Thursday at 2 PM?`;
+            } else if (type === 'financing') {
+                box.innerHTML = `Hi ${guestName}, great news regarding your inquiry on the ${vehicle}. We currently offer special promotional APR rates through our partner lenders. Would you like a secure pre-approval link?`;
+            }
+        }
+
+        async function saveLeadChanges() {
+            if (activeLeadRowIndex === null && activeLeadRowIndex === undefined) return;
+
+            const newStatus = document.getElementById('modal-lead-status').value;
+            const newNotes = document.getElementById('modal-lead-notes').value.trim();
+
+            const leadObj = crmData.leads.find(l => l.rowIndex === activeLeadRowIndex);
+            if (leadObj) {
+                leadObj.Status = newStatus;
+                leadObj.Notes = newNotes;
+            }
+
+            renderPipeline();
+            renderAnalytics();
+            renderServiceRetention();
+            closeLeadModal();
+
+            try {
+                await fetch(SHOWROOM_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'updateLead',
+                        dealerName: loggedInDealer,
+                        leadId: activeLeadRowIndex,
+                        status: newStatus,
+                        notes: newNotes
+                    })
+                });
+
+                if (newStatus === 'Closed Won' && leadObj) {
+                    await triggerMarketingAction('sendPostSaleThankYou', {
+                        guestName: leadObj.GuestName || leadObj.Name,
+                        email: leadObj.Email,
+                        vehicle: leadObj.RequestedVehicle || leadObj.Vehicle
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to sync lead update to backend", err);
+            }
+        }
+
+        function openVehicleModal(index) {
+            activeVehicleIndex = index;
+            const car = crmData.inventory[index];
+            if (!car) return;
+
+            const carName = `${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''}`;
+            document.getElementById('modal-vehicle-title').textContent = carName;
+            document.getElementById('modal-vehicle-price').textContent = car.Price ? '$' + Number(car.Price).toLocaleString() : 'N/A';
+            document.getElementById('modal-vehicle-mileage').textContent = car.Mileage ? Number(car.Mileage).toLocaleString() + ' mi' : 'N/A';
+            document.getElementById('modal-vehicle-transmission').textContent = car.Transmission || car.transmission || 'Automatic';
+            document.getElementById('modal-vehicle-drivetrain').textContent = car.Drivetrain || car.drivetrain || 'AWD';
+            document.getElementById('modal-vehicle-prep').value = car.PrepStatus || 'Frontline Ready';
+            document.getElementById('modal-vehicle-lead').value = car.AssignedLead || '';
+
+            document.getElementById('vehicle-modal').classList.remove('hidden');
+            document.getElementById('vehicle-modal').classList.add('flex');
+        }
+
+        function closeVehicleModal() {
+            document.getElementById('vehicle-modal').classList.add('hidden');
+            document.getElementById('vehicle-modal').classList.remove('flex');
+            activeVehicleIndex = null;
+        }
+
+        async function saveVehicleChanges() {
+            if (activeVehicleIndex === null) return;
+            const car = crmData.inventory[activeVehicleIndex];
+            car.PrepStatus = document.getElementById('modal-vehicle-prep').value;
+            car.AssignedLead = document.getElementById('modal-vehicle-lead').value.trim();
+
+            renderInventoryTable();
+            closeVehicleModal();
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventory-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (!crmData.inventory || !crmData.inventory.length) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No vehicles currently assigned to ${loggedInDealer}.</td></tr>`;
+                return;
+            }
+
+            crmData.inventory.forEach((car, index) => {
+                const year = car.Year || car.year || '';
+                const make = car.Make || car.make || '';
+                const model = car.Model || car.model || '';
+                const trim = car.Trim || car.trim || 'Standard';
+                const rawPrice = car.Price || car.price || 0;
+                const formattedPrice = !isNaN(rawPrice) ? Number(rawPrice).toLocaleString() : rawPrice;
+                const rawMileage = car.Mileage || car.mileage;
+                const formattedMileage = rawMileage && !isNaN(rawMileage) ? Number(rawMileage).toLocaleString() + ' mi' : (rawMileage || 'N/A');
+                const prepStatus = car.PrepStatus || 'Frontline Ready';
+                const assignedLead = car.AssignedLead || 'Unassigned';
+
+                let badgeColor = "bg-blue-950 text-blue-300 border-blue-800";
+                if (prepStatus === 'Frontline Ready') badgeColor = "bg-emerald-950 text-emerald-300 border-emerald-800";
+                else if (prepStatus === 'Safety Inspection') badgeColor = "bg-amber-950 text-amber-300 border-amber-800";
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/40 transition-all cursor-pointer";
+                tr.onclick = () => openVehicleModal(index);
+                tr.innerHTML = `
+                    <td class="p-4">
+                        <div class="font-bold text-white underline">${year} ${make} ${model} (${trim})</div>
+                        <div class="text-xs text-slate-400">Click to view specs & lot status</div>
+                    </td>
+                    <td class="p-4 font-semibold text-emerald-400">${typeof formattedPrice === 'number' ? '$' + formattedPrice : formattedPrice}</td>
+                    <td class="p-4 text-slate-300">${formattedMileage}</td>
+                    <td class="p-4"><span class="${badgeColor} px-2.5 py-1 rounded-full text-xs border">${prepStatus}</span></td>
+                    <td class="p-4 text-xs text-slate-300"><i class="fa-solid fa-user-tag text-[var(--accent-cyan)] mr-1"></i> ${assignedLead}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderAnalytics() {
+            const totalLeadsElem = document.getElementById('stat-total-leads');
+            const closedWonElem = document.getElementById('stat-closed-won');
+            const roiElem = document.getElementById('stat-roi');
+
+            if (totalLeadsElem) totalLeadsElem.textContent = crmData.leads.length;
+
+            const closedWonLeads = crmData.leads.filter(l => (l.Status || l.status || '').toLowerCase().includes('close'));
+            if (closedWonElem) closedWonElem.textContent = closedWonLeads.length;
+
+            const estimatedRevenue = closedWonLeads.length * 24500; // Average transaction value baseline
+            const referralFeesPaid = closedWonLeads.length * 735; // 3% referral fee
+            const netRoi = referralFeesPaid > 0 ? Math.round((estimatedRevenue / referralFeesPaid) * 100) : 412;
+            if (roiElem) roiElem.textContent = netRoi + '%';
+        }
+
+        function renderServiceRetention() {
+            const tbody = document.getElementById('service-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const closedWonLeads = crmData.leads.filter(l => (l.Status || l.status || '').toLowerCase().includes('close'));
+
+            if (!closedWonLeads.length) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No closed sales referrals requiring service follow-up yet.</td></tr>`;
+                return;
+            }
+
+            closedWonLeads.forEach(lead => {
+                const name = lead.GuestName || lead.Name || 'Valued Customer';
+                const email = lead.Email || 'N/A';
+                const phone = lead.Phone || 'N/A';
+                const vehicle = lead.RequestedVehicle || lead.Vehicle || 'Purchased Vehicle';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/40 transition-all";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-white">${name}</td>
+                    <td class="p-4 text-xs text-slate-300">
+                        <div><i class="fa-solid fa-envelope mr-1 text-[var(--accent-cyan)]"></i> ${email}</div>
+                        <div><i class="fa-solid fa-phone mr-1 text-[var(--accent-cyan)]"></i> ${phone}</div>
+                    </td>
+                    <td class="p-4 text-white font-medium">${vehicle}</td>
+                    <td class="p-4"><span class="bg-emerald-950 text-emerald-300 px-2.5 py-1 rounded-full text-xs border border-emerald-800">30-Day Check-in Due</span></td>
+                    <td class="p-4 text-right space-x-2">
+                        <a href="tel:${phone}" class="bg-slate-800 hover:bg-slate-700 text-[var(--accent-cyan)] p-2 rounded-lg text-xs inline-block border border-slate-700" title="Call Customer"><i class="fa-solid fa-phone"></i></a>
+                        <a href="mailto:${email}?subject=Your%20${encodeURIComponent(vehicle)}%20Service%20Reminder" class="bg-[var(--accent-blue)] hover:bg-blue-700 text-white p-2 rounded-lg text-xs inline-block" title="Email Service Reminder"><i class="fa-solid fa-envelope"></i></a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openNurtureModal() {
+            document.getElementById('nurtureModal').classList.remove('hidden');
+            document.getElementById('nurtureModal').classList.add('flex');
+        }
+
+        function closeNurtureModal() {
+            document.getElementById('nurtureModal').classList.add('hidden');
+            document.getElementById('nurtureModal').classList.remove('flex');
+        }
+
+        async function submitNurtureConfig() {
+            const durationDays = parseInt(document.getElementById('nurtureDuration').value) || 14;
+            const testEmail = document.getElementById('nurtureTestEmail').value.trim() || "gothicafashions@gmail.com";
+            closeNurtureModal();
+            await triggerMarketingAction('configureNurture', { touchPoints: 5, durationDays: durationDays, testEmail: testEmail });
+        }
+
+        async function triggerServiceReminders() {
+            await triggerMarketingAction('sendServiceReminders', { triggerType: 'manualBatch' });
+        }
+
+        async function triggerMarketingAction(campaignAction, settings = {}) {
+            try {
+                const res = await fetch(SHOWROOM_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'marketingAction',
+                        campaignAction: campaignAction,
+                        dealerName: loggedInDealer,
+                        settings: settings
+                    })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert(result.message || "Marketing action completed successfully.");
+                } else {
+                    alert("Error: " + (result.message || "Could not complete action."));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error communicating with marketing automation backend.");
+            }
+        }
+    </script>
+</body>
+</html>

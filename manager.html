@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveConnect VIP | Executive Manager Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="background: #090d16; color: #f8fafc; font-family: 'Montserrat', sans-serif; margin: 0; padding-bottom: 60px;">
+
+    <!-- Manager Login Overlay Modal -->
+    <div id="managerLoginOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 13, 22, 0.95); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 40px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+            <div style="font-size: 36px; color: #ef4444; margin-bottom: 15px;"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3 style="color: #fff; font-size: 20px; margin: 0 0 10px 0;">Executive Portal</h3>
+            <p style="color: #94a3b8; font-size: 13px; margin: 0 0 20px 0;">Enter your 3-digit master passcode to proceed.</p>
+            <form onsubmit="submitManagerPin(event)">
+                <input type="password" id="managerPinInput" maxlength="3" placeholder="---" autocomplete="off" style="width: 100%; padding: 14px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 22px; text-align: center; letter-spacing: 8px; outline: none; margin-bottom: 15px;" />
+                <button type="submit" style="width: 100%; padding: 12px; background: #ef4444; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">Authorize Access</button>
+            </form>
+            <div id="loginErrorMsg" style="color: #f87171; font-size: 12px; margin-top: 12px; min-height: 16px;"></div>
+        </div>
+    </div>
+
+    <header class="main-header glass-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #0f172a; border-bottom: 1px solid #1e293b;">
+        <div class="logo" style="font-weight: 900; font-size: 20px; letter-spacing: 1px;">DRIVECONNECT <span style="color: #2563eb;">VIP</span> <span style="font-size: 12px; background: #1e293b; color: #22c55e; padding: 4px 8px; border-radius: 4px; margin-left: 10px; border: 1px solid #334155;">ADMIN PORTAL</span></div>
+        <nav>
+            <ul class="nav-links" style="display: flex; list-style: none; gap: 20px; align-items: center; margin: 0; padding: 0;">
+                <li><a href="index.html" style="color: #94a3b8; text-decoration: none; font-weight: 600; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'"><i class="fa-solid fa-car"></i> INVENTORY</a></li>
+                <li><a href="#" onclick="lockPortal(event)" style="color: #ef4444; text-decoration: none; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-lock-open"></i> LOCK PORTAL</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="max-width: 1400px; margin: 40px auto; padding: 0 20px;">
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 35px;">
+            <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+                <p style="color: #94a3b8; font-size: 13px; font-weight: 600; text-transform: uppercase; margin: 0 0 8px 0;"><i class="fa-solid fa-wallet" style="color: #2563eb; margin-right: 6px;"></i> Total Referral Fees (Running)</p>
+                <h2 id="metric-total-fees" style="font-size: 32px; font-weight: 700; color: #22c55e; margin: 0;">$0</h2>
+                <p style="color: #64748b; font-size: 12px; margin: 6px 0 0 0;">Accumulated across all active lead allocations</p>
+            </div>
+
+            <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+                <p style="color: #94a3b8; font-size: 13px; font-weight: 600; text-transform: uppercase; margin: 0 0 8px 0;"><i class="fa-solid fa-chart-line" style="color: #3b82f6; margin-right: 6px;"></i> Total Portfolio Sale Volume</p>
+                <h2 id="metric-total-volume" style="font-size: 32px; font-weight: 700; color: #fff; margin: 0;">$0</h2>
+                <p style="color: #64748b; font-size: 12px; margin: 6px 0 0 0;">Combined vehicle value of submitted leads</p>
+            </div>
+
+            <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+                <p style="color: #94a3b8; font-size: 13px; font-weight: 600; text-transform: uppercase; margin: 0 0 8px 0;"><i class="fa-solid fa-users" style="color: #eab308; margin-right: 6px;"></i> Total Logged Leads</p>
+                <h2 id="metric-total-leads" style="font-size: 32px; font-weight: 700; color: #fff; margin: 0;">0</h2>
+                <p style="color: #64748b; font-size: 12px; margin: 6px 0 0 0;">Synchronized with Google Sheets Leads tab</p>
+            </div>
+        </div>
+
+        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 5px 0; color: #fff;"><i class="fa-solid fa-table" style="color: #2563eb; margin-right: 8px;"></i> Google Sheets Leads Log</h3>
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0;">Real-time sync matching your Leads sheet columns.</p>
+                </div>
+                <button onclick="refreshLeadsData()" style="background: #1e293b; color: #fff; border: 1px solid #334155; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'"><i class="fa-solid fa-rotate"></i> Sync Sheets Data</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr style="background: #1e293b; color: #94a3b8; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Timestamp</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Guest Name</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Email</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Phone</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Requested Vehicle</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Dealer</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Sale Price</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Referral Fee</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid #334155;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leads-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const SHOWROOM_API_URL = "https://script.google.com/macros/s/AKfycbyhyovVS1gp-ZAtmXW09uGGSdEdTFVe4JyYXpk2jf5UcRvsV6Q2yXDBucfn7_IvehFw/exec";
+
+        // Check authentication on load and handle BFCache re-loads across localStorage & sessionStorage
+        window.addEventListener('pageshow', function(event) {
+            checkAuthStatus();
+        });
+
+        function checkAuthStatus() {
+            const authLocal = localStorage.getItem('driveconnect_manager_auth') === 'true' || localStorage.getItem('isAdmin') === 'true';
+            const authSession = sessionStorage.getItem('driveconnect_manager_auth') === 'true';
+            const overlay = document.getElementById('managerLoginOverlay');
+
+            if (!authLocal && !authSession) {
+                if (overlay) overlay.style.display = 'flex';
+            } else {
+                if (overlay) overlay.style.display = 'none';
+                refreshLeadsData();
+            }
+        }
+
+        function submitManagerPin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('managerPinInput').value.trim();
+            const errorMsg = document.getElementById('loginErrorMsg');
+
+            if (pin === "777") {
+                sessionStorage.setItem('driveconnect_manager_auth', 'true');
+                localStorage.setItem('driveconnect_manager_auth', 'true');
+                localStorage.setItem('isAdmin', 'true');
+
+                document.getElementById('managerLoginOverlay').style.display = 'none';
+                document.getElementById('managerPinInput').value = '';
+                errorMsg.textContent = '';
+                refreshLeadsData();
+            } else {
+                errorMsg.textContent = "Invalid passcode. Please try again.";
+                document.getElementById('managerPinInput').value = '';
+            }
+        }
+
+        function lockPortal(e) {
+            e.preventDefault();
+            sessionStorage.removeItem('driveconnect_manager_auth');
+            localStorage.removeItem('driveconnect_manager_auth');
+            localStorage.removeItem('isAdmin');
+            document.getElementById('managerLoginOverlay').style.display = 'flex';
+        }
+
+        async function refreshLeadsData() {
+            let leads = [];
+
+            try {
+                const res = await fetch(SHOWROOM_API_URL + "?action=getLeads");
+                const data = await res.json();
+                if (data.leads && Array.isArray(data.leads)) {
+                    leads = data.leads;
+                }
+            } catch (err) {
+                console.warn("Could not fetch remote leads directly, falling back to local storage sync:", err);
+            }
+
+            const localLeads = JSON.parse(localStorage.getItem('driveconnect_leads') || '[]');
+
+            const mergedMap = new Map();
+            [...localLeads, ...leads].forEach(lead => {
+                const key = `${lead.Timestamp || lead.timestamp || ''}_${lead.Email || lead.email || ''}`;
+                if (!mergedMap.has(key)) {
+                    mergedMap.set(key, lead);
+                }
+            });
+
+            const allLeads = Array.from(mergedMap.values());
+            renderLeadsTable(allLeads);
+        }
+
+        function renderLeadsTable(leads) {
+            const tbody = document.getElementById('leads-table-body');
+            const totalFeesEl = document.getElementById('metric-total-fees');
+            const totalVolumeEl = document.getElementById('metric-total-volume');
+            const totalLeadsEl = document.getElementById('metric-total-leads');
+
+            if (!tbody) return;
+
+            if (leads.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px; color: #94a3b8; font-style: italic;">No leads recorded yet. Submitted referral inquiries will appear here automatically.</td></tr>`;
+                totalFeesEl.textContent = '$0';
+                totalVolumeEl.textContent = '$0';
+                totalLeadsEl.textContent = '0';
+                return;
+            }
+
+            let sumFees = 0;
+            let sumVolume = 0;
+
+            tbody.innerHTML = leads.map(lead => {
+                const salePrice = Number(lead.SalePrice || lead.saleprice || 0);
+                const refFee = Math.round(salePrice * 0.02);
+                sumFees += refFee;
+                sumVolume += salePrice;
+
+                const dateStr = lead.Timestamp ? new Date(lead.Timestamp).toLocaleString() : 'Recent';
+                const status = lead.Status || lead.status || 'Pending';
+                const statusColor = status.toLowerCase() === 'confirmed' || status.toLowerCase() === 'completed' ? '#22c55e' : '#eab308';
+                const emailVal = lead.Email || lead.email || 'N/A';
+
+                return `
+                    <tr style="border-bottom: 1px solid #1e293b; transition: background 0.1s;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 14px 12px; color: #94a3b8; white-space: nowrap;">${dateStr}</td>
+                        <td style="padding: 14px 12px; font-weight: 600; color: #fff;">${lead.GuestName || lead.guestname || lead.Name || 'N/A'}</td>
+                        <td style="padding: 14px 12px; color: #94a3b8;"><a href="mailto:${emailVal}" style="color: #60a5fa; text-decoration: none;">${emailVal}</a></td>
+                        <td style="padding: 14px 12px; color: #94a3b8; white-space: nowrap;">${lead.Phone || lead.phone || 'N/A'}</td>
+                        <td style="padding: 14px 12px; font-weight: 600; color: #f8fafc;">${lead.RequestedVehicle || lead.requestedvehicle || lead.requestedVehicle || 'N/A'}</td>
+                        <td style="padding: 14px 12px; color: #cbd5e1;">${lead.Dealer || lead.dealer || 'Primary Network'}</td>
+                        <td style="padding: 14px 12px; font-weight: 600; color: #38bdf8; white-space: nowrap;">$${salePrice.toLocaleString()}</td>
+                        <td style="padding: 14px 12px; font-weight: 700; color: #22c55e; white-space: nowrap;">$${refFee.toLocaleString()}</td>
+                        <td style="padding: 14px 12px; white-space: nowrap;"><span style="background: ${statusColor}15; color: ${statusColor}; border: 1px solid ${statusColor}40; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase;">${status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+
+            totalFeesEl.textContent = '$' + sumFees.toLocaleString();
+            totalVolumeEl.textContent = '$' + sumVolume.toLocaleString();
+            totalLeadsEl.textContent = leads.length;
+        }
+
+        // Initialize check on execution
+        checkAuthStatus();
+    </script>
+</body>
+</html>

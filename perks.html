@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveConnect VIP — Program Benefits & Dealer Perks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            background: #090d16;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background: #0f172a;
+            border-bottom: 1px solid #1e293b;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+        }
+        .logo span { color: #38bdf8; }
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #38bdf8; }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .hero-section h1 {
+            font-size: 38px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        .hero-section p {
+            font-size: 17px;
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        .benefit-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .benefit-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #38bdf8;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .benefit-card h3 {
+            font-size: 19px;
+            color: #fff;
+            margin: 0 0 10px 0;
+        }
+        .benefit-card p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-subtitle {
+            color: #94a3b8;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        #dealer-perks-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .dealer-perk-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .dealer-perk-card:hover {
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+        .browse-btn {
+            font-size: 13px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+        .browse-btn:hover {
+            color: #7dd3fc;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">DriveConnect<span>VIP</span></a>
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Showroom</a>
+    </header>
+
+    <div class="container">
+
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <span style="background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Exclusive Concierge Program</span>
+            <h1>The DriveConnect VIP Advantage</h1>
+            <p>Experience a streamlined, high-priority vehicle acquisition process backed by our premier network partner dealerships and dedicated senior advisors.</p>
+        </div>
+
+        <!-- Program Benefits Grid -->
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon"><i class="fa-solid fa-bolt"></i></div>
+                <h3>Priority Vehicle Allocation</h3>
+                <p>Skip the public waiting lists. DriveConnect VIP members receive front-of-line access to newly released vehicle allocations across our entire regional network.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><i class="fa-solid fa-file-shield"></i></div>
+                <h3>Waived Documentation Fees</h3>
+                <p>Enjoy exclusive partner concessions, including waived or significantly reduced standard dealer documentation and administrative preparation fees.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><i class="fa-solid fa-user-tie"></i></div>
+                <h3>Dedicated Senior Advisor</h3>
+                <p>You are paired directly with a high-level client relations manager who fast-tracks your paperwork, trade-in valuations, and VIP delivery experience.</p>
+            </div>
+        </div>
+
+        <!-- Live Dealer Perks Section -->
+        <div style="margin-top: 60px;">
+            <div class="section-title">
+                <i class="fa-solid fa-gift" style="color: #22c55e;"></i> Network Partner Dealer Perks
+            </div>
+            <div class="section-subtitle">Exclusive perks offered directly by our certified network partner dealerships when you purchase through DriveConnect VIP.</div>
+
+            <div id="dealer-perks-container">
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8;">
+                    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 10px;">Loading live dealer perks from Google Sheets database...</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const SHOWROOM_API_URL = "https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec";
+
+        async function loadDealerPerks() {
+            const container = document.getElementById('dealer-perks-container');
+            if (!container) return;
+
+            try {
+                // Fetch dealers list directly from Google Sheets backend
+                const res = await fetch(SHOWROOM_API_URL);
+                const data = await res.json();
+
+                if (data.status !== 'success' || !data.dealers || data.dealers.length === 0) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #94a3b8; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px;">No active network partner perks currently listed.</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.dealers.forEach(dealer => {
+                    const normalized = {};
+                    for (let key in dealer) {
+                        normalized[key.toLowerCase().trim()] = dealer[key];
+                    }
+
+                    const dealerID = normalized.dealerid || normalized.id || '';
+                    const dealerName = normalized.dealername || normalized.name || normalized.dealer || 'Verified Partner Dealership';
+                    const defaultPerk = normalized.defaultperk || normalized.dealerperk || normalized.perk || 'Complimentary VIP delivery package, priority service lane booking, and full tank of fuel upon handover.';
+                    const city = normalized.city || '';
+                    const state = normalized.state || '';
+                    const location = city && state ? `${city}, ${state}` : (city || state);
+
+                    // Link directly to index.html with the dealer filter set to either DealerID or DealerName
+                    const filterParam = dealerID ? encodeURIComponent(dealerID) : encodeURIComponent(dealerName);
+                    const showroomUrl = `index.html?dealer=${filterParam}`;
+
+                    const card = document.createElement('div');
+                    card.className = 'dealer-perk-card';
+                    card.innerHTML = `
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <h3 style="margin: 0; font-size: 18px; color: #fff;">${dealerName}</h3>
+                                ${location ? `<span style="font-size: 11px; background: #1e293b; color: #38bdf8; padding: 3px 8px; border-radius: 4px; border: 1px solid #334155;">${location}</span>` : ''}
+                            </div>
+                            <div style="background: rgba(30,41,59,0.7); border-left: 3px solid #22c55e; padding: 12px; border-radius: 6px; font-size: 14px; color: #cbd5e1; line-height: 1.4; margin-top: 14px;">
+                                <strong style="color: #22c55e; display: block; margin-bottom: 4px;"><i class="fa-solid fa-tag"></i> Default Member Perk:</strong>
+                                ${defaultPerk}
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid #1e293b; display: flex; justify-content: flex-end;">
+                            <a href="${showroomUrl}" class="browse-btn">
+                                <span>Browse Allocations</span> <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Error loading dealer perks from Google Sheets:", err);
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #ef4444; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px;">Failed to load live perks from Google Sheets database. Please check your connection.</div>';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadDealerPerks);
+    </script>
+</body>
+</html>

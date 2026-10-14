@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveConnect VIP | Instant Vehicle Trade-In Valuation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="selection:bg-sky-500 selection:text-white">
+
+    <!-- HEADER NAVIGATION -->
+    <header class="bg-[#0f172a] border-b border-[#1e293b] sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="logo.png" alt="DriveConnect VIP Logo" class="w-9 h-9 object-contain rounded-lg" onerror="this.style.display='none'">
+            <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1">
+                DriveConnect <span class="text-sky-400 font-light">VIP</span>
+            </h1>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
+            <a href="index.html" class="transition hover:text-sky-400">Showroom</a>
+            <a href="trade-in.html" class="text-white font-semibold transition hover:text-sky-400">Trade-In</a>
+            <a href="client-dashboard.html" class="transition hover:text-sky-400">My Dashboard</a>
+            <a href="perks.html" class="transition hover:text-sky-400">VIP Perks</a>
+        </nav>
+
+        <div class="flex items-center space-x-3">
+            <a href="index.html" class="bg-sky-400 hover:bg-sky-300 text-[#090d16] px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Showroom</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+
+        <!-- TITLE CARD -->
+        <div class="bg-[#0f172a] border border-[#1e293b] p-6 sm:p-8 rounded-2xl shadow-xl text-center space-y-3">
+            <div class="inline-flex items-center gap-2 bg-[#090d16] border border-[#1e293b] px-3 py-1 rounded-full text-xs font-mono text-sky-400 mx-auto">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                INSTANT APPRAISAL CONCIERGE
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Vehicle Trade-In Valuation</h2>
+            <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">Submit your vehicle details below to receive an instant market evaluation report synchronized with your Google Sheets concierge network.</p>
+        </div>
+
+        <!-- TRADE-IN FORM -->
+        <div class="bg-[#0f172a] border border-[#1e293b] p-6 sm:p-8 rounded-2xl shadow-xl">
+            <form id="trade-in-form" onsubmit="submitTradeIn(event)" class="space-y-6">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Full Name</label>
+                        <input type="text" id="trade-name" required placeholder="e.g. Thomas King" class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Email Address</label>
+                        <input type="email" id="trade-email" required placeholder="e.g. thomas@example.com" class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Vehicle Year</label>
+                        <input type="number" id="trade-year" required placeholder="e.g. 2018" class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Make</label>
+                        <input type="text" id="trade-make" required placeholder="e.g. Ford" class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Model</label>
+                        <input type="text" id="trade-model" required placeholder="e.g. Escape" class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Current Mileage</label>
+                        <input type="number" id="trade-mileage" required placeholder="e.g. 65000" class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Estimated Condition</label>
+                        <select id="trade-condition" class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                            <option value="Excellent">Excellent (Like New)</option>
+                            <option value="Good" selected>Good (Minor wear)</option>
+                            <option value="Fair">Fair (Needs minor service)</option>
+                            <option value="Poor">Poor (Major service required)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Additional Notes / VIN (Optional)</label>
+                    <textarea id="trade-notes" rows="3" placeholder="Enter VIN or any specific details about condition, upgrades, or damage..." class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400"></textarea>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-sky-400 hover:bg-sky-300 text-[#090d16] font-extrabold py-4 rounded-xl text-sm transition cursor-pointer shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-calculator"></i> Submit Appraisal Request
+                </button>
+            </form>
+
+            <!-- SUCCESS NOTIFICATION BOX (HIDDEN BY DEFAULT) -->
+            <div id="success-box" class="hidden mt-6 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6 text-center space-y-3">
+                <div class="text-3xl text-emerald-400"><i class="fa-solid fa-circle-check"></i></div>
+                <h3 class="text-lg font-bold text-white">Trade-In Appraisal Logged!</h3>
+                <p class="text-xs text-slate-300 max-w-md mx-auto">Your valuation request has been successfully saved to your Google Sheets concierge database. Our team will review your details and email your appraisal quote shortly.</p>
+                <button onclick="resetForm()" class="mt-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition cursor-pointer">Submit Another Vehicle</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#090d16] border-t border-[#1e293b] py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div>&copy; 2026 DriveConnect VIP &bull; Executive Showroom & Management Portal. All rights reserved.</div>
+            <div class="flex items-center space-x-6">
+                <a href="index.html" class="hover:text-slate-300 transition">Showroom</a>
+                <a href="trade-in.html" class="hover:text-slate-300 transition">Trade-In</a>
+                <a href="client-dashboard.html" class="hover:text-slate-300 transition">My Dashboard</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const SHOWROOM_API_URL = "https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec";
+
+        async function submitTradeIn(event) {
+            event.preventDefault();
+
+            const btn = document.getElementById('submit-btn');
+            const form = document.getElementById('trade-in-form');
+            const successBox = document.getElementById('success-box');
+
+            const payload = {
+                action: 'tradeIn',
+                GuestName: document.getElementById('trade-name').value.trim(),
+                Email: document.getElementById('trade-email').value.trim(),
+                Vehicle: `${document.getElementById('trade-year').value} ${document.getElementById('trade-make').value} ${document.getElementById('trade-model').value}`,
+                Mileage: document.getElementById('trade-mileage').value.trim(),
+                Condition: document.getElementById('trade-condition').value,
+                Notes: document.getElementById('trade-notes').value.trim()
+            };
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting to Google Sheets...';
+
+            try {
+                // Using mode: 'no-cors' to prevent local browser CORS blocking on POST submissions to Google Apps Script
+                await fetch(SHOWROOM_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // Store email locally for dashboard syncing
+                localStorage.setItem('clientEmail', payload.Email);
+
+                form.classList.add('hidden');
+                successBox.classList.remove('hidden');
+            } catch (err) {
+                console.error('Trade-in submission error:', err);
+                alert('There was an issue submitting your trade-in. Please check your connection and try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-calculator"></i> Submit Appraisal Request';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('trade-in-form').reset();
+            document.getElementById('trade-in-form').classList.remove('hidden');
+            document.getElementById('success-box').classList.add('hidden');
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-calculator"></i> Submit Appraisal Request';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveConnect VIP | Executive Showroom & Management Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(9, 13, 22, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+        .modal-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; max-width: 480px; width: 100%; padding: 30px; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body class="selection:bg-sky-500 selection:text-white">
+
+    <!-- HEADER NAVIGATION -->
+    <header class="bg-[#0f172a] border-b border-[#1e293b] sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="logo.png" alt="DriveConnect VIP Logo" class="w-9 h-9 object-contain rounded-lg" onerror="this.style.display='none'">
+            <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1">
+                DriveConnect <span class="text-sky-400 font-light">VIP</span>
+            </h1>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
+            <a href="index.html" class="text-white font-semibold transition hover:text-sky-400">Showroom</a>
+            <a href="trade-in.html" class="transition hover:text-sky-400">Trade-In</a>
+            <a href="client-dashboard.html" class="transition hover:text-sky-400">My Dashboard</a>
+            <a href="perks.html" class="transition hover:text-sky-400">VIP Perks</a>
+        </nav>
+
+        <div class="flex items-center space-x-3">
+            <a href="client-dashboard.html" class="bg-slate-800 hover:bg-slate-700 border border-[#1e293b] text-slate-200 px-3.5 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition">
+                <i class="fa-solid fa-car text-sky-400"></i>
+                <span>VIP Garage</span>
+            </a>
+            <button id="dealer-crm-btn" class="bg-slate-800 hover:bg-slate-700 border border-[#1e293b] text-slate-200 px-3.5 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition cursor-pointer">
+                <i class="fa-solid fa-lock text-emerald-400"></i>
+                Dealer CRM
+            </button>
+            <a href="manager.html" class="hidden sm:inline-flex bg-slate-800 hover:bg-slate-700 border border-[#1e293b] text-slate-200 px-3.5 py-2 rounded-lg text-xs font-medium transition">
+                Admin
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- HERO BANNER -->
+        <section class="relative rounded-2xl overflow-hidden border border-[#1e293b] shadow-2xl h-60 sm:h-72 flex items-center bg-slate-900">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#090d16] via-[#090d16]/90 to-transparent z-10"></div>
+            <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1600&q=80" alt="Hero Car" class="absolute inset-0 w-full h-full object-cover object-center opacity-30">
+
+            <div class="relative z-20 max-w-6xl px-6 sm:px-10 w-full flex items-center justify-between gap-6">
+                <div class="flex-shrink-0 hidden sm:flex items-center">
+                    <img src="logo.png" alt="Emblem" class="h-40 w-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]" onerror="this.style.display='none'">
+                </div>
+                <div class="space-y-2 sm:space-y-3 flex-grow">
+                    <div class="inline-flex items-center gap-2 bg-[#0f172a]/90 border border-[#1e293b] px-3 py-1 rounded-full text-xs font-mono text-sky-400">
+                        <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                        YOUR PERSONAL CONCIERGE NETWORK
+                    </div>
+                    <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight text-white">Find Your Perfect Ride, Your Way</h2>
+                    <p class="text-xs sm:text-sm text-slate-300 max-w-lg">Welcome to a hassle-free showroom experience. Explore verified network allocations, calculate custom lease terms, or request instant VIP concierge care.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEARCH & ADVANCED FILTER BAR -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div class="relative w-full max-w-xl">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
+                <input type="text" id="inventorySearch" placeholder="Search by make, model, year, dealer..." oninput="filterInventory(this.value)" class="w-full bg-[#0f172a] border border-[#1e293b] rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400 shadow-inner">
+            </div>
+            <button onclick="toggleAdvancedSearch()" class="w-full sm:w-auto bg-[#0f172a] hover:bg-slate-800 border border-[#1e293b] text-slate-300 px-5 py-3 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-sliders text-sky-400"></i>
+                Advanced Search
+            </button>
+        </div>
+
+        <!-- ADVANCED SEARCH PANEL -->
+        <div id="advanced-search-panel" class="bg-[#0f172a] border border-[#1e293b] p-6 rounded-2xl gap-4 hidden flex-col sm:flex-row items-center justify-between shadow-xl">
+            <div class="w-full sm:w-1/2">
+                <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Filter by Make</label>
+                <select id="adv-make" onchange="applyAdvancedFilters()" class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400">
+                    <option value="">All Makes</option>
+                </select>
+            </div>
+            <div class="w-full sm:w-1/2">
+                <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Sort by Price</label>
+                <select id="adv-price-sort" onchange="applyAdvancedFilters()" class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400">
+                    <option value="">Featured Allocations</option>
+                    <option value="low-high">Price: Low to High</option>
+                    <option value="high-low">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- INVENTORY GRID -->
+        <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <!-- PAGINATION CONTROLS -->
+        <div id="pagination-container" class="flex justify-center gap-2 pt-4"></div>
+
+    </main>
+
+    <!-- SPEC SHEET MODAL -->
+    <div id="spec-modal" class="modal-overlay">
+        <div class="modal-card max-w-3xl" style="padding: 0; overflow: hidden;">
+            <button onclick="closeSpecModal()" style="position: absolute; top: 15px; right: 15px; background: rgba(15,23,42,0.8); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-xmark"></i></button>
+            <div id="spec-modal-content"></div>
+        </div>
+    </div>
+
+    <!-- FINANCE CALCULATOR MODAL -->
+    <div id="calculator-modal" class="modal-overlay">
+        <div class="modal-card space-y-5">
+            <button onclick="closeCalculatorModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <div>
+                <h3 class="text-xl font-bold text-white">Finance & Lease Estimator</h3>
+                <p class="text-xs text-sky-400 mt-1 font-mono" id="calc-vehicle-title">Selected Vehicle</p>
+                <p class="text-lg font-extrabold text-emerald-400 mt-1" id="calc-vehicle-price">$0</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Credit Profile</label>
+                    <select id="calc-credit" onchange="onCreditScoreChange()" class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400">
+                        <option value="750">Excellent (740+) — Est. 5.5% APR</option>
+                        <option value="700" selected>Good (700-739) — Est. 7.0% APR</option>
+                        <option value="650">Fair (620-699) — Est. 10.5% APR</option>
+                        <option value="580">Rebuilding (Below 620) — Est. 14.5% APR</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Estimated APR (%)</label>
+                    <input type="number" id="calc-rate" value="7.0" step="0.1" oninput="updateCalculator()" class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Loan Term (Months)</label>
+                    <select id="calc-term" onchange="updateCalculator()" class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400">
+                        <option value="36">36 Months</option>
+                        <option value="48">48 Months</option>
+                        <option value="60" selected>60 Months</option>
+                        <option value="72">72 Months</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-semibold text-slate-300 uppercase mb-1">
+                        <span>Down Payment</span>
+                        <span id="down-payment-val" class="text-sky-400">$0</span>
+                    </div>
+                    <input type="range" id="calc-down" min="0" max="50000" step="1000" value="0" oninput="updateCalculator()" class="w-full accent-sky-400 cursor-pointer">
+                </div>
+                <div class="p-4 bg-[#090d16] border border-[#1e293b] rounded-xl text-center space-y-1">
+                    <span class="text-xs uppercase font-mono text-slate-400">Estimated Monthly Payment</span>
+                    <div class="text-3xl font-extrabold text-emerald-400" id="calc-monthly-result">$0/mo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIP PASS MODAL -->
+    <div id="vip-modal" class="modal-overlay">
+        <div class="modal-card space-y-5" style="max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeVipModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; z-index: 10;"><i class="fa-solid fa-xmark"></i></button>
+            <div class="space-y-3">
+                <div id="vip-modal-car-image-container" class="w-full h-44 rounded-xl overflow-hidden bg-slate-900 border border-[#1e293b]">
+                    <img id="vip-modal-car-img" src="" alt="Vehicle" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white" id="vip-modal-car-title">Claim VIP Referral Pass</h3>
+                    <p class="text-xs text-sky-400 mt-1 font-mono" id="vip-modal-dealer-subtitle">Showroom Allocation</p>
+                </div>
+            </div>
+            <form onsubmit="submitVipPass(event)" class="space-y-4">
+                <input type="hidden" id="vip-car-id">
+                <input type="hidden" id="vip-car-name">
+                <input type="hidden" id="vip-dealer-name">
+                <input type="hidden" id="vip-car-price">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Full Name</label>
+                    <input type="text" id="vip-name" required class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400" placeholder="Thomas King">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Email Address</label>
+                    <input type="email" id="vip-email" required class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400" placeholder="thomas@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Phone Number</label>
+                    <input type="tel" id="vip-phone" required class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400" placeholder="(555) 000-0000">
+                </div>
+                <div id="vip-submit-status" class="text-xs text-center font-medium text-sky-400 hidden"></div>
+                <button type="submit" id="vip-submit-btn" class="w-full bg-emerald-400 text-[#090d16] font-bold py-3 rounded-xl transition hover:bg-emerald-300 cursor-pointer">Generate VIP Pass & Concierge Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DEALER CRM LOGIN MODAL -->
+    <div id="dealer-login-modal" class="modal-overlay">
+        <div class="modal-card space-y-5">
+            <button onclick="document.getElementById('dealer-login-modal').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center space-y-2">
+                <div class="text-3xl text-sky-400"><i class="fa-solid fa-lock"></i></div>
+                <h3 class="text-xl font-bold text-white">Network Dealer CRM Portal</h3>
+                <p class="text-slate-400 text-xs">Select your dealership and enter your unique access PIN.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Dealership Name</label>
+                    <select id="dealer-name-input" class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                        <option value="" disabled selected>Select your dealership...</option>
+                        <option value="Metro Luxury Motors">Metro Luxury Motors</option>
+                        <option value="Northshore Exotic Motors">Northshore Exotic Motors</option>
+                        <option value="Granite State Auto Group">Granite State Auto Group</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Dealer Password / PIN</label>
+                    <input type="password" id="dealer-pin-input" placeholder="e.g. 333" class="w-full bg-[#090d16] border border-[#1e293b] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400 tracking-widest">
+                </div>
+                <div id="dealer-login-error" class="text-xs text-center font-medium text-red-400 hidden"></div>
+                <button id="dealer-login-submit" class="w-full bg-sky-400 text-[#090d16] font-bold py-3 rounded-xl transition hover:bg-sky-300 text-sm cursor-pointer">Authenticate & Open CRM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING ARIA CHATBOT WIDGET -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleChat()" class="relative group w-14 h-14 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.4)] flex items-center justify-center transition transform hover:scale-105 border-2 border-sky-400 bg-[#090d16] overflow-hidden cursor-pointer">
+            <img src="aria.png" alt="Aria AI" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'">
+            <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-[#090d16] rounded-full animate-pulse"></span>
+        </button>
+
+        <div id="chat-box" class="hidden flex-col absolute bottom-20 right-0 w-80 sm:w-96 h-[480px] bg-[#0f172a] border border-sky-400/60 rounded-2xl shadow-[0_0_35px_rgba(56,189,248,0.2)] overflow-hidden z-50 backdrop-blur-xl">
+            <div class="bg-[#090d16]/90 p-4 border-b border-[#1e293b] flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="relative w-9 h-9 rounded-full border border-sky-400 overflow-hidden shadow-md bg-[#090d16] flex-shrink-0">
+                        <img src="aria.png" alt="Aria" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'">
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-1 ring-[#090d16]"></span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-sm tracking-wide flex items-center gap-1.5">
+                            Aria <span class="text-[10px] font-mono text-sky-400 bg-sky-400/10 px-1.5 py-0.5 rounded border border-sky-400/30">AI Concierge</span>
+                        </h3>
+                        <p class="text-[11px] text-emerald-400 font-medium">Online & ready to assist</p>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="text-slate-400 hover:text-white text-lg font-bold px-2 transition cursor-pointer">&times;</button>
+            </div>
+
+            <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 text-sm flex flex-col bg-[#090d16]/40">
+                <div style="background: #1e293b; color: #f8fafc; padding: 12px 14px; border-radius: 12px 12px 12px 4px; max-width: 88%; border: 1px solid #334155; line-height: 1.4; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    Hello! I'm Aria, your DriveConnect VIP concierge. Ask me about our live vehicle inventory, financing estimates, or exclusive VIP Pass perks!
+                </div>
+            </div>
+
+            <div class="p-3 bg-[#090d16] border-t border-[#1e293b] flex gap-2 items-center">
+                <input type="text" id="chat-input" onkeypress="handleChatKey(event)" placeholder="Ask Aria about cars or VIP perks..." class="flex-grow bg-[#0f172a] border border-[#1e293b] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400 shadow-inner">
+                <button onclick="sendChatMessage()" class="bg-sky-400 hover:bg-sky-300 text-[#090d16] px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg transition flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#090d16] border-t border-[#1e293b] py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div>&copy; 2026 DriveConnect VIP &bull; Executive Showroom & Management Portal. All rights reserved.</div>
+            <div class="flex items-center space-x-6">
+                <a href="index.html" class="hover:text-slate-300 transition">Showroom</a>
+                <a href="trade-in.html" class="hover:text-slate-300 transition">Trade-In</a>
+                <a href="client-dashboard.html" class="hover:text-slate-300 transition">My Dashboard</a>
+                <a href="#" onclick="document.getElementById('dealer-login-modal').style.display='flex'; return false;" class="hover:text-slate-300 transition cursor-pointer">Dealer CRM Login</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MASTER ENGINE SCRIPT -->
+    <script src="aria.js"></script>
+    <script>
+        // Google Apps Script Web App URL
+        const SHOWROOM_API_URL = "https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const crmBtn = document.getElementById('dealer-crm-btn');
+            if (crmBtn) {
+                crmBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const modal = document.getElementById('dealer-login-modal');
+                    if (modal) modal.style.display = 'flex';
+                });
+            }
+
+            const crmSubmit = document.getElementById('dealer-login-submit');
+            if (crmSubmit) {
+                crmSubmit.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const dealerName = document.getElementById('dealer-name-input').value;
+                    const password = document.getElementById('dealer-pin-input').value.trim();
+                    const errBox = document.getElementById('dealer-login-error');
+
+                    if (!dealerName || !password) {
+                        errBox.textContent = 'Please select a dealership and enter your password.';
+                        errBox.classList.remove('hidden');
+                        return;
+                    }
+
+                    crmSubmit.textContent = 'Authenticating...';
+                    crmSubmit.disabled = true;
+                    errBox.classList.add('hidden');
+
+                    try {
+                        const queryParams = new URLSearchParams({
+                            action: 'dealerLogin',
+                            dealerName: dealerName,
+                            password: password
+                        });
+
+                        const res = await fetch(`${SHOWROOM_API_URL}?${queryParams.toString()}`);
+                        const data = await res.json();
+
+                        if (data.status === 'success') {
+                            localStorage.setItem('activeDealer', data.dealerName);
+                            localStorage.setItem('dealerAuthenticated', 'true');
+                            localStorage.setItem('managerLoggedIn', 'true');
+
+                            window.location.href = `manager-crm.html?dealer=${encodeURIComponent(data.dealerName)}`;
+                        } else {
+                            errBox.textContent = data.message || 'Incorrect password.';
+                            errBox.classList.remove('hidden');
+                            crmSubmit.textContent = 'Authenticate & Open CRM';
+                            crmSubmit.disabled = false;
+                        }
+                    } catch (err) {
+                        console.error('Login error:', err);
+                        errBox.textContent = 'Server connection error. Please try again.';
+                        errBox.classList.remove('hidden');
+                        crmSubmit.textContent = 'Authenticate & Open CRM';
+                        crmSubmit.disabled = false;
+                    }
+                });
+            }
+        });
+
+        // --- BRIDGE FUNCTION CALLED BY ARIA.JS ---
+        function openVipModal(carId, carName, dealerName, carPrice, photoUrl) {
+            openVipModalForVehicle(carId, carName, dealerName, carPrice, photoUrl);
+        }
+
+        // --- VIP PASS MODAL CONTROLS & SUBMISSION ---
+        function openVipModalForVehicle(carId, carName, dealerName, carPrice, photoUrl) {
+            const modal = document.getElementById('vip-modal');
+            if (!modal) return;
+
+            document.getElementById('vip-car-id').value = carId || '';
+            document.getElementById('vip-car-name').value = carName || 'Vehicle Inquiry';
+            document.getElementById('vip-dealer-name').value = dealerName || 'DriveConnect VIP Showroom';
+            document.getElementById('vip-car-price').value = carPrice || 0;
+
+            document.getElementById('vip-modal-car-title').textContent = carName || 'Vehicle Allocation';
+            document.getElementById('vip-modal-dealer-subtitle').textContent = 'Holding Dealer: ' + (dealerName || 'DriveConnect VIP Showroom');
+
+            const imgEl = document.getElementById('vip-modal-car-img');
+            if (imgEl) {
+                imgEl.src = photoUrl || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf';
+            }
+
+            document.getElementById('vip-submit-status').classList.add('hidden');
+            const submitBtn = document.getElementById('vip-submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generate VIP Pass & Concierge Request';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeVipModal() {
+            const modal = document.getElementById('vip-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+   async function submitVipPass(event) {
+            event.preventDefault();
+
+            const guestName = document.getElementById('vip-name').value.trim();
+            const guestEmail = document.getElementById('vip-email').value.trim();
+            const guestPhone = document.getElementById('vip-phone').value.trim();
+
+            // Pull inputs, fallback to modal header text if hidden inputs are empty
+            let requestedVehicle = document.getElementById('vip-car-name').value.trim();
+            if (!requestedVehicle || requestedVehicle === 'Vehicle Inquiry') {
+                requestedVehicle = document.getElementById('vip-modal-car-title').textContent.trim();
+            }
+
+            let dealer = document.getElementById('vip-dealer-name').value.trim();
+            if (!dealer || dealer === 'DriveConnect VIP Showroom') {
+                const subtitle = document.getElementById('vip-modal-dealer-subtitle').textContent;
+                dealer = subtitle.replace('Holding Dealer:', '').replace('Showroom Allocation', '').trim();
+            }
+
+            const salePrice = Number(document.getElementById('vip-car-price').value || 0);
+
+            const imgEl = document.getElementById('vip-modal-car-img');
+            const photoUrl = imgEl ? imgEl.src : '';
+
+            const statusEl = document.getElementById('vip-submit-status');
+            const submitBtn = document.getElementById('vip-submit-btn');
+
+            if (!guestName || !guestEmail || !guestPhone) {
+                alert('Please fill out all required contact fields.');
+                return;
+            }
+
+            // Generate instant 6-character VIP code
+            const generatedVipCode = "VIP-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+            submitBtn.textContent = 'Generating VIP Pass...';
+            submitBtn.disabled = true;
+            statusEl.textContent = 'Logging lead and dispatching your VIP pass...';
+            statusEl.classList.remove('hidden');
+
+            try {
+                const payload = {
+                    action: 'logLead',
+                    GuestName: guestName,
+                    Email: guestEmail,
+                    Phone: guestPhone,
+                    RequestedVehicle: requestedVehicle,
+                    Dealer: dealer,
+                    SalePrice: salePrice,
+                    VIPCode: generatedVipCode,
+                    photoUrl: photoUrl
+                };
+
+                await fetch(SHOWROOM_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                statusEl.innerHTML = `
+                    <div style="background: rgba(56,189,248,0.1); border: 1px solid #38bdf8; padding: 12px; border-radius: 8px; margin-top: 10px;">
+                        <span style="color: #94a3b8; font-size: 11px; display: block; text-transform: uppercase;">Your Unique Referral Code</span>
+                        <span style="color: #38bdf8; font-size: 20px; font-weight: bold; font-family: monospace;">${generatedVipCode}</span>
+                        <p style="color: #34d399; font-size: 12px; margin-top: 4px;">Confirmation details sent to ${guestEmail}</p>
+                    </div>
+                `;
+                submitBtn.textContent = 'VIP Pass Generated!';
+
+                setTimeout(() => {
+                    closeVipModal();
+                }, 4000);
+
+            } catch (err) {
+                console.error('VIP Pass Submission Error:', err);
+                statusEl.textContent = 'Network error. Please check your connection and try again.';
+                submitBtn.textContent = 'Generate VIP Pass & Concierge Request';
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

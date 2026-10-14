@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveConnect VIP | My Dashboard & Garage</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="selection:bg-sky-500 selection:text-white">
+
+    <!-- HEADER NAVIGATION -->
+    <header class="bg-[#0f172a] border-b border-[#1e293b] sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="logo.png" alt="DriveConnect VIP Logo" class="w-9 h-9 object-contain rounded-lg" onerror="this.style.display='none'">
+            <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1">
+                DriveConnect <span class="text-sky-400 font-light">VIP</span>
+            </h1>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
+            <a href="index.html" class="transition hover:text-sky-400">Showroom</a>
+            <a href="trade-in.html" class="transition hover:text-sky-400">Trade-In</a>
+            <a href="client-dashboard.html" class="text-white font-semibold transition hover:text-sky-400">My Dashboard</a>
+            <a href="perks.html" class="transition hover:text-sky-400">VIP Perks</a>
+        </nav>
+
+        <div class="flex items-center space-x-3">
+            <a href="index.html" class="bg-sky-400 hover:bg-sky-300 text-[#090d16] px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Showroom</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- WELCOME BANNER -->
+        <div class="bg-[#0f172a] border border-[#1e293b] p-6 sm:p-8 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+            <div class="space-y-2 text-center sm:text-left">
+                <div class="inline-flex items-center gap-2 bg-[#090d16] border border-[#1e293b] px-3 py-1 rounded-full text-xs font-mono text-sky-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    GOOGLE SHEETS SYNCED CONCIERGE PORTAL
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">My VIP Garage & Reservations</h2>
+                <p class="text-xs sm:text-sm text-slate-400">Manage your active VIP referral codes, review vehicle inquiries, and track your concierge allocations.</p>
+            </div>
+            <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+                <input type="email" id="lookup-email-input" placeholder="Enter your email..." class="bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400">
+                <button onclick="fetchClientGarage()" class="bg-sky-400 hover:bg-sky-300 text-[#090d16] font-bold px-6 py-3 rounded-xl text-xs sm:text-sm transition cursor-pointer shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate"></i> Load My Passes
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD CONTENT SECTION -->
+        <div class="space-y-6">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-ticket text-sky-400"></i> Active VIP Passes & Inquiries
+            </h3>
+
+            <div id="dashboard-passes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Default empty state -->
+                <div class="col-span-full bg-[#0f172a] border border-[#1e293b] rounded-2xl p-12 text-center space-y-3">
+                    <div class="text-3xl text-slate-500"><i class="fa-solid fa-car-side"></i></div>
+                    <h4 class="text-base font-bold text-white">No active passes loaded</h4>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto">Enter your email address above and click "Load My Passes" to sync your active reservations from the Google Sheets database.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#090d16] border-t border-[#1e293b] py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div>&copy; 2026 DriveConnect VIP &bull; Executive Showroom & Management Portal. All rights reserved.</div>
+            <div class="flex items-center space-x-6">
+                <a href="index.html" class="hover:text-slate-300 transition">Showroom</a>
+                <a href="trade-in.html" class="hover:text-slate-300 transition">Trade-In</a>
+                <a href="client-dashboard.html" class="hover:text-slate-300 transition">My Dashboard</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const SHOWROOM_API_URL = "https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user has a stored email in localStorage from previous VIP Pass claims
+            const savedEmail = localStorage.getItem('clientEmail');
+            if (savedEmail) {
+                document.getElementById('lookup-email-input').value = savedEmail;
+                fetchClientGarage();
+            }
+        });
+
+        async function fetchClientGarage() {
+            const emailInput = document.getElementById('lookup-email-input');
+            const email = emailInput ? emailInput.value.trim() : '';
+            const grid = document.getElementById('dashboard-passes-grid');
+
+            if (!email) {
+                alert('Please enter your email address to load your dashboard.');
+                return;
+            }
+
+            localStorage.setItem('clientEmail', email);
+            grid.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400"><i class="fa-solid fa-spinner fa-spin fa-2x text-sky-400"></i><p class="mt-2 text-xs">Syncing your VIP garage from Google Sheets...</p></div>';
+
+            try {
+                const queryParams = new URLSearchParams({
+                    action: 'getGarage',
+                    query: email
+                });
+
+                const res = await fetch(`${SHOWROOM_API_URL}?${queryParams.toString()}`);
+                const data = await res.json();
+
+                if (data.status === 'success' && data.leads && data.leads.length > 0) {
+                    grid.innerHTML = '';
+                    data.leads.forEach(lead => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-[#0f172a] border border-[#1e293b] rounded-2xl p-6 space-y-4 shadow-xl flex flex-col justify-between';
+                        card.innerHTML = `
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="bg-sky-400/10 border border-sky-400/30 text-sky-400 text-xs font-mono px-3 py-1 rounded-full font-bold">
+                                        ${lead.VIPCode || lead.vipCode || 'VIP-PASS'}
+                                    </span>
+                                    <span class="text-xs text-emerald-400 font-medium">Status: ${lead.Status || 'Active'}</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-base font-bold text-white">${lead.RequestedVehicle || lead.vehicle || 'Vehicle Allocation'}</h4>
+                                    <p class="text-xs text-sky-400 font-mono mt-0.5">${lead.Dealer || 'Authorized Partner Showroom'}</p>
+                                </div>
+                                <div class="p-3 bg-[#090d16] border border-[#1e293b] rounded-xl space-y-1 text-xs">
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Target Price:</span>
+                                        <span class="text-emerald-400 font-bold">$${Number(lead.SalePrice || lead.price || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Guest:</span>
+                                        <span class="text-slate-200">${lead.GuestName || lead.name || email}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pt-3 border-t border-[#1e293b]">
+                                <a href="index.html" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-car text-sky-400"></i> View Showroom
+                                </a>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } else {
+                    grid.innerHTML = `
+                        <div class="col-span-full bg-[#0f172a] border border-[#1e293b] rounded-2xl p-12 text-center space-y-3">
+                            <div class="text-3xl text-sky-400"><i class="fa-solid fa-ticket-simple"></i></div>
+                            <h4 class="text-base font-bold text-white">No Reservations Found</h4>
+                            <p class="text-xs text-slate-400 max-w-md mx-auto">We couldn't find any active VIP passes associated with <strong>${email}</strong>. Visit the showroom to claim your first VIP pass!</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Garage fetch error:', err);
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-red-400 text-xs">Unable to connect to Google Sheets database. Please check your network connection.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
