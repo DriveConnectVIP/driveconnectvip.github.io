@@ -3,11 +3,8 @@
    ========================================== */
 
 const CONFIG = {
-    // Replace with your Google Apps Script Web App URL (code.gs)
+    // Google Apps Script Web App URL (code.gs)
     SHOWROOM_API_URL: 'https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec',
-
-    // Replace with your Gemini API Key (Supports AQ. and AIzaSy keys)
-    GEMINI_API_KEY: 'AQ.Ab8RN6Je_GJMmdy7-KhR64XobgtYpPvmhgGEKKhzU2L3-3Adwg',
 
     DEBUG: true
 };
@@ -36,11 +33,10 @@ function checkAndApplyUrlDealerFilter() {
 // --- 1. NETWORK DATA FETCHING (GOOGLE SHEETS via code.gs) ---
 async function fetchNetworkDataForAria() {
     try {
-        // If testing locally, route through a CORS proxy to bypass browser restrictions
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const targetUrl = isLocal ? `https://corsproxy.io/?${encodeURIComponent(SHOWROOM_API_URL)}` : SHOWROOM_API_URL;
-
-        const response = await fetch(targetUrl);
+        const response = await fetch(CONFIG.SHOWROOM_API_URL, {
+            method: 'GET',
+            redirect: 'follow'
+        });
         const data = await response.json();
 
         if (data && data.status === 'success') {
@@ -52,8 +48,9 @@ async function fetchNetworkDataForAria() {
         console.warn("⚠️ Error fetching live inventory data:", err);
     }
 
-    return { inventory: [], dealers: [] };
+    return { inventory: cachedInventory || [], dealers: cachedDealers || [] };
 }
+
 // --- 2. INVENTORY GRID & RENDERING (PAGINATED TO 6 CARDS PER PAGE) ---
 async function loadInventory() {
     const grid = document.getElementById('inventory-grid');
@@ -316,43 +313,13 @@ async function sendChatMessage() {
         let aiReply = "";
         let matchedCarForAction = null;
 
-        // Check for VIP Pass & Concierge Benefits hardcoded shortcuts
+        // Check for VIP Pass & Concierge Benefits shortcuts
         if (lowerText.includes('vip') || lowerText.includes('perk') || lowerText.includes('pass') || lowerText.includes('concierge') || lowerText.includes('benefit')) {
             aiReply = `🌟 **DriveConnect VIP Pass Exclusive Benefits:**\n` +
                       `• **Priority Test Drives:** Skip the showroom queue and schedule private test drives directly to your location.\n` +
                       `• **Personal Concierge Service:** Dedicated advisors to match you with custom financing, credit rebuilding options, and vehicle tracking.\n` +
                       `• **Complimentary Maintenance & Warranties:** Bundled multi-point inspections and extended dealer network protection plans.\n` +
                       `• **Flexible Financing:** Customized solutions tailored for all credit backgrounds and budgets.`;
-        }
-        // 1. Attempt Gemini API if key is present
-        else if (CONFIG.GEMINI_API_KEY && (CONFIG.GEMINI_API_KEY.startsWith("AQ.") || CONFIG.GEMINI_API_KEY.startsWith("AIzaSy"))) {
-            try {
-                const inventorySummary = inventory.map(car =>
-                    `- ${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''} | Price: $${car.Price || car.price || 'N/A'} | Dealer: ${car.Dealer || car.dealer || 'Partner Network'}`
-                ).join('\n');
-
-                const systemPrompt = `You are Aria, an elite, highly knowledgeable AI concierge for the DriveConnect VIP virtual auto showroom.
-Live inventory specs from Google Sheets:\n${inventorySummary}\n\nInstructions:
-- Keep responses short, professional, and sophisticated.
-- Detail VIP Pass benefits when asked.
-- If the user asks about specific makes, models, or budgets, list matching vehicles with years, models, trims, and pricing.
-- End your response by asking the guest if they would like to sign up for a VIP pass.`;
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ role: "user", parts: [{ text: systemPrompt + "\n\nCustomer Question: " + text }] }]
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                }
-            } catch (apiErr) {
-                console.warn("Gemini network call failed, falling back to smart local engine:", apiErr);
-            }
         }
 
         const matchingCars = inventory.filter(car => {
@@ -372,7 +339,7 @@ Live inventory specs from Google Sheets:\n${inventorySummary}\n\nInstructions:
             matchedCarForAction = matchingCars[0];
         }
 
-        // 3. Fallback Smart Local Engine Matcher
+        // Smart Local Engine Matcher
         if (!aiReply) {
             if (matchingCars.length > 0) {
                 aiReply = `Yes, we have matching allocations in our network:\n\n` +
@@ -465,7 +432,7 @@ function openSpecModal(carIdOrObj) {
         car.image_url_5
     ].filter(img => img && img.trim() !== '');
 
-    if (images.length === 0) images.push('https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80');
+    if (images.length === 0) images.push('sportscar.jpg');
 
     content.innerHTML = `
         <div style="max-height: 85vh; overflow-y: auto; background: #0f172a; color: #f8fafc; border-radius: 12px; padding-bottom: 20px;">
@@ -531,7 +498,7 @@ function openSpecModal(carIdOrObj) {
     });
 
     document.getElementById('modal-calc-btn').addEventListener('click', () => openCalculatorModal(car.Price || car.price, carName));
-    document.getElementById('modal-vip-btn').addEventListener('click', () => openVipModal(car));
+    document.getElementById('modal-vip-btn').addEventListener('click', () => openVipPassModal(car));
 
     modal.style.display = 'flex';
 }
@@ -636,7 +603,7 @@ async function submitVipPass(event) {
     const vipCode = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
 
     try {
-        if (CONFIG.SHOWROOM_API_URL && !CONFIG.SHOWROOM_API_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
+        if (CONFIG.SHOWROOM_API_URL) {
             await fetch(CONFIG.SHOWROOM_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
