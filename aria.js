@@ -5,7 +5,6 @@
 const CONFIG = {
     // Google Apps Script Web App URL (code.gs)
     SHOWROOM_API_URL: 'https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec',
-
     DEBUG: true
 };
 
@@ -75,7 +74,7 @@ async function loadInventory() {
         // Filter inventory right away before rendering
         const query = decodedDealer.toLowerCase();
         filteredInventory = cachedInventory.filter(car => {
-            const fullStr = `${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''} ${car.DealerCode || car.Dealer || car.DealerID || car.DealerName || ''}`.toLowerCase();
+            const fullStr = `${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''} ${car.DealerID || car.DealerCode || car.Dealer || car.DealerName || ''}`.toLowerCase();
             return fullStr.includes(query);
         });
     }
@@ -98,17 +97,17 @@ function renderInventoryPage() {
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedItems = filteredInventory.slice(start, start + itemsPerPage);
 
-    // Delegate rendering to index.html's robust heart-safe renderInventory function if available, passing exactly 6 items
+    // Delegate rendering to index.html's renderInventory function if available
     if (typeof window.renderInventory === 'function') {
         window.renderInventory(paginatedItems);
     } else {
-        // Fallback native render if external renderInventory isn't present
+        // Fallback native render with dynamic DealerID resolution
         paginatedItems.forEach((car, index) => {
             const absoluteIndex = start + index;
             const carName = `${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''}`.trim();
             const price = Number(car.Price || car.price || 0).toLocaleString();
             const image = car.ImageURL || car.image_url_1 || 'sportscar.jpg';
-            const dealer = car.DealerCode || car.Dealer || 'Apex Motor Group';
+            const dealer = car.DealerID || car.DealerCode || car.Dealer || car.DealerName || 'VIP Partner';
             const mileage = Number(car.Mileage || car.mileage || 1250).toLocaleString();
             const condition = car.Condition || car.status || 'Verified Allocation';
 
@@ -170,7 +169,6 @@ function changePage(targetPage) {
     currentPage = targetPage;
     renderInventoryPage();
 
-    // Smooth scroll back up to the top of the inventory section
     const gridEl = document.getElementById('inventory-grid');
     if (gridEl) {
         const topPos = gridEl.getBoundingClientRect().top + window.pageYOffset - 120;
@@ -181,7 +179,7 @@ function changePage(targetPage) {
 function filterInventory(keyword) {
     const query = keyword.toLowerCase();
     filteredInventory = cachedInventory.filter(car => {
-        const fullStr = `${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''} ${car.DealerCode || car.Dealer || car.DealerID || car.DealerName || ''}`.toLowerCase();
+        const fullStr = `${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''} ${car.DealerID || car.DealerCode || car.Dealer || car.DealerName || ''}`.toLowerCase();
         return fullStr.includes(query);
     });
     currentPage = 1;
@@ -313,7 +311,6 @@ async function sendChatMessage() {
         let aiReply = "";
         let matchedCarForAction = null;
 
-        // Check for VIP Pass & Concierge Benefits shortcuts
         if (lowerText.includes('vip') || lowerText.includes('perk') || lowerText.includes('pass') || lowerText.includes('concierge') || lowerText.includes('benefit')) {
             aiReply = `🌟 **DriveConnect VIP Pass Exclusive Benefits:**\n` +
                       `• **Priority Test Drives:** Skip the showroom queue and schedule private test drives directly to your location.\n` +
@@ -339,7 +336,6 @@ async function sendChatMessage() {
             matchedCarForAction = matchingCars[0];
         }
 
-        // Smart Local Engine Matcher
         if (!aiReply) {
             if (matchingCars.length > 0) {
                 aiReply = `Yes, we have matching allocations in our network:\n\n` +
@@ -380,7 +376,7 @@ async function sendChatMessage() {
         if (matchedCarForAction) {
             const carTitle = `${matchedCarForAction.Year || matchedCarForAction.year || ''} ${matchedCarForAction.Make || matchedCarForAction.make || ''} ${matchedCarForAction.Model || matchedCarForAction.model || ''} ${matchedCarForAction.Trim || matchedCarForAction.trim || ''}`;
             const carPrice = Number(matchedCarForAction.Price || matchedCarForAction.price || 0);
-            const dealer = matchedCarForAction.Dealer || matchedCarForAction.dealer || 'Primary Network';
+            const dealer = matchedCarForAction.DealerID || matchedCarForAction.DealerCode || matchedCarForAction.Dealer || 'VIP Partner';
             actionHtml = `<br><br><button onclick="openReferralModalForCar('${carTitle}', ${carPrice}, '${dealer}')" style="background: #22c55e; color: #090d16; border: none; padding: 8px 14px; border-radius: 4px; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-file-signature"></i> Claim VIP Referral Pass for this Vehicle</button>`;
         }
 
@@ -423,6 +419,7 @@ function openSpecModal(carIdOrObj) {
     const carName = `${car.Year || car.year || ''} ${car.Make || car.make || ''} ${car.Model || car.model || ''} ${car.Trim || car.trim || ''}`;
     const price = Number(car.Price || car.price || 0).toLocaleString();
     const mileage = Number(car.Mileage || car.mileage || 0).toLocaleString();
+    const dealerIdentifier = car.DealerID || car.dealer_id || car.DealerCode || car.Dealer || car.DealerName || 'VIP Partner';
 
     const images = [
         car.image_url_1 || car.ImageURL || car.imageurl,
@@ -438,7 +435,7 @@ function openSpecModal(carIdOrObj) {
         <div style="max-height: 85vh; overflow-y: auto; background: #0f172a; color: #f8fafc; border-radius: 12px; padding-bottom: 20px;">
             <div style="height: 320px; background: #1e293b; overflow: hidden; position: relative;">
                 <img id="modal-main-img" src="${images[0]}" alt="${carName}" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s ease;">
-                <span style="position: absolute; top: 15px; left: 15px; background: rgba(15,23,42,0.85); backdrop-filter: blur(4px); color: #38bdf8; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; border: 1px solid #334155;">${car.DealerID || car.dealer_id || car.DealerCode || car.Dealer || 'Apex Motor Group'}</span>
+                <span style="position: absolute; top: 15px; left: 15px; background: rgba(15,23,42,0.85); backdrop-filter: blur(4px); color: #38bdf8; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; border: 1px solid #334155;">${dealerIdentifier}</span>
                 <span style="position: absolute; top: 15px; right: 15px; background: rgba(34,197,94,0.85); backdrop-filter: blur(4px); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">${car.Condition || car.status || 'Verified'}</span>
             </div>
 
@@ -600,6 +597,7 @@ async function submitVipPass(event) {
 
     const vehicleName = `${selectedCarForVip.Year || selectedCarForVip.year || ''} ${selectedCarForVip.Make || selectedCarForVip.make || ''} ${selectedCarForVip.Model || selectedCarForVip.model || ''}`;
     const price = Number(selectedCarForVip.Price || selectedCarForVip.price || 0);
+    const dealerIdentifier = selectedCarForVip.DealerID || selectedCarForVip.DealerCode || selectedCarForVip.Dealer || 'VIP Partner';
     const vipCode = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
 
     try {
@@ -613,7 +611,7 @@ async function submitVipPass(event) {
                     email: email,
                     phone: phone,
                     requested_vehicle: vehicleName,
-                    dealer: selectedCarForVip.DealerCode || selectedCarForVip.Dealer || 'Apex Motor Group',
+                    dealer: dealerIdentifier,
                     sale_price: price,
                     referral_fee: price * 0.03,
                     vip_code: vipCode
