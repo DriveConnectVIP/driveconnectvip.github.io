@@ -398,10 +398,10 @@
             if (perkElem) perkElem.innerHTML = `<i class="fa-solid fa-gift mr-1"></i> Perk: Connecting to live feed...`;
 
             try {
+                // PROFESSIONAL CRM METHOD: Use dedicated authorized endpoint instead of dealerLogin with blank passwords
                 const queryParams = new URLSearchParams({
-                    action: 'dealerLogin',
-                    dealerName: loggedInDealer,
-                    password: ''
+                    action: 'getAuthorizedDealerData',
+                    dealerName: loggedInDealer
                 });
 
                 const res = await fetch(`${SHOWROOM_API_URL}?${queryParams.toString()}`);
