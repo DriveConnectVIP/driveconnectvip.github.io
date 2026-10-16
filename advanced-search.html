@@ -177,7 +177,15 @@
                 const data = await fetchJsonp(`${SHOWROOM_API_URL}`, cbName);
 
                 if (data && data.inventory && Array.isArray(data.inventory)) {
-                    masterInventory = data.inventory;
+                    // NORMALIZE KEYS: Strip whitespace and lowercase all keys so header variations (e.g. "Make ", "make") never break filtering
+                    masterInventory = data.inventory.map(car => {
+                        const normalized = {};
+                        Object.keys(car).forEach(k => {
+                            const cleanKey = k.trim().toLowerCase();
+                            normalized[cleanKey] = car[k];
+                        });
+                        return normalized;
+                    });
                 } else {
                     useFallbackInventory();
                 }
@@ -189,11 +197,11 @@
 
         function useFallbackInventory() {
             masterInventory = [
-                { Year: "2024", Make: "Ford", Model: "Mustang Dark Horse", Trim: "V8 Premium", Price: 64500, Mileage: 1200, Dealer: "Northshore Exotic Motors", ImageURL: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=800&q=80", DealerPerk: "Complimentary 3-Year Maintenance Plan" },
-                { Year: "2023", Make: "Porsche", Model: "911 Carrera S", Trim: "PDK", Price: 134500, Mileage: 4800, Dealer: "Metro Luxury Motors", ImageURL: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80", DealerPerk: "Track Day Pass & VIP Ceramic Coating" },
-                { Year: "2024", Make: "Mercedes-Benz", Model: "G-Class G 63 AMG", Trim: "Bi-Turbo", Price: 185000, Mileage: 2100, Dealer: "Metro Luxury Motors", ImageURL: "https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?auto=format&fit=crop&w=800&q=80", DealerPerk: "Free Enclosed Home Delivery" },
-                { Year: "2024", Make: "BMW", Model: "M4 Competition", Trim: "xDrive", Price: 78900, Mileage: 3400, Dealer: "Granite State Auto Group", ImageURL: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80", DealerPerk: "1-Year VIP Tire & Wheel Protection" },
-                { Year: "2024", Make: "Subaru", Model: "WRX Limited", Trim: "6-Speed Manual", Price: 36500, Mileage: 500, Dealer: "Granite State Auto Group", ImageURL: "https://images.unsplash.com/photo-1626668891365-27a961cb2fb9?auto=format&fit=crop&w=800&q=80", DealerPerk: "Complimentary All-Weather Package" }
+                { year: "2024", make: "Ford", model: "Mustang Dark Horse", trim: "V8 Premium", price: 64500, mileage: 1200, dealer: "Northshore Exotic Motors", imageurl: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=800&q=80", dealerperk: "Complimentary 3-Year Maintenance Plan" },
+                { year: "2023", make: "Porsche", model: "911 Carrera S", trim: "PDK", price: 134500, mileage: 4800, dealer: "Metro Luxury Motors", imageurl: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80", dealerperk: "Track Day Pass & VIP Ceramic Coating" },
+                { year: "2024", make: "Mercedes-Benz", model: "G-Class G 63 AMG", trim: "Bi-Turbo", price: 185000, mileage: 2100, dealer: "Metro Luxury Motors", imageurl: "https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?auto=format&fit=crop&w=800&q=80", dealerperk: "Free Enclosed Home Delivery" },
+                { year: "2024", make: "BMW", model: "M4 Competition", trim: "xDrive", price: 78900, mileage: 3400, dealer: "Granite State Auto Group", imageurl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80", dealerperk: "1-Year VIP Tire & Wheel Protection" },
+                { year: "2024", make: "Subaru", model: "WRX Limited", trim: "6-Speed Manual", price: 36500, mileage: 500, dealer: "Granite State Auto Group", imageurl: "https://images.unsplash.com/photo-1626668891365-27a961cb2fb9?auto=format&fit=crop&w=800&q=80", dealerperk: "Complimentary All-Weather Package" }
             ];
         }
 
@@ -208,16 +216,16 @@
             const maxPrice = Number(document.getElementById('filter-max-price').value || 0);
 
             const filtered = masterInventory.filter(car => {
-                const carMake = String(car.Make || car.make || '').toLowerCase();
-                const carModel = String(car.Model || car.model || '').toLowerCase();
-                const carTrim = String(car.Trim || car.trim || '').toLowerCase();
-                const carYear = String(car.Year || car.year || '').toLowerCase();
+                const carMake = String(car.make || car.manufacturer || '').trim().toLowerCase();
+                const carModel = String(car.model || '').trim().toLowerCase();
+                const carTrim = String(car.trim || '').trim().toLowerCase();
+                const carYear = String(car.year || '').trim().toLowerCase();
                 const fullTitle = `${carYear} ${carMake} ${carModel} ${carTrim}`;
 
-                const rawPrice = Number(car.Price || car.price || 0);
+                const rawPrice = Number(car.price || car.saleprice || 0);
 
-                // 1. Make Filter
-                if (selectedMake && !carMake.includes(selectedMake) && !fullTitle.includes(selectedMake)) {
+                // 1. Make Filter (Strict check against normalized make property or title)
+                if (selectedMake && carMake !== selectedMake && !carMake.includes(selectedMake) && !fullTitle.includes(selectedMake)) {
                     return false;
                 }
 
@@ -268,16 +276,16 @@
             }
 
             inventory.forEach(car => {
-                const year = car.Year || car.year || '';
-                const make = car.Make || car.make || '';
-                const model = car.Model || car.model || '';
-                const trim = car.Trim || car.trim || '';
+                const year = car.year || '';
+                const make = car.make || '';
+                const model = car.model || '';
+                const trim = car.trim || '';
                 const title = `${year} ${make} ${model} ${trim}`.trim();
-                const price = Number(car.Price || car.price || 0);
-                const dealer = car.Dealer || car.dealer || car.DealerName || 'Partner Dealer';
-                const perk = car.DealerPerk || car.Perk || car.defaultPerk || 'Complimentary VIP Concierge Service';
-                const photoUrl = (car.ImageURL && String(car.ImageURL).startsWith('http'))
-                    ? car.ImageURL
+                const price = Number(car.price || 0);
+                const dealer = car.dealer || car.dealername || 'Partner Dealer';
+                const perk = car.dealerperk || car.perk || car.defaultperk || 'Complimentary VIP Concierge Service';
+                const photoUrl = (car.imageurl && String(car.imageurl).startsWith('http'))
+                    ? car.imageurl
                     : 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80';
 
                 const card = document.createElement('div');
