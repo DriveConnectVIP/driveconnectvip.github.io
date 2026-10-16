@@ -3,239 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveConnect VIP | Advanced Network Search</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>DriveConnect VIP | Network-Wide Advanced Search</title>
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        :root {
+            --bg-main: #090d16;
+            --bg-card: #0f172a;
+            --border-color: #334155;
+            --accent-blue: #2563eb;
+            --accent-cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
-        .header-logo {
-            height: 40px;
-            width: auto;
-            object-fit: contain;
-        }
-        .vip-gold {
-            color: #d97706;
-        }
-        /* Fixed top spacing so content doesn't hide behind the sticky header */
-        .advanced-container {
-            max-width: 1000px;
-            margin: 120px auto 40px auto;
-            padding: 0 20px;
-        }
-        .search-panel {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            color: #f8fafc;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .form-group label {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .form-group input, .form-group select {
-            background: #0f172a;
-            border: 1px solid #475569;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            outline: none;
-        }
-        .form-group input:focus, .form-group select:focus {
-            border-color: #3b82f6;
-        }
-        .action-bar {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            grid-column: 1 / -1;
-        }
-        .btn-primary {
-            flex: 1;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-        .btn-secondary {
-            background: #334155;
-            color: white;
-            border: none;
-            padding: 14px 25px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-decoration: none;
-            text-align: center;
-        }
-        .btn-secondary:hover {
-            background: #475569;
-        }
+        body { background-color: var(--bg-main); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        .glass-card { background: var(--bg-card); border: 1px solid var(--border-color); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     </style>
 </head>
-<body style="background: #090d16; color: #f8fafc; font-family: 'Montserrat', sans-serif; margin: 0;">
-    <header class="main-header glass-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #0f172a; border-bottom: 1px solid #1e293b; position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
-        <div class="brand-container">
-            <img src="logo.png" alt="DriveConnect Logo" class="header-logo" onerror="this.style.display='none'">
-            <div class="logo" style="font-weight: 900; font-size: 20px; letter-spacing: 1px;">DRIVECONNECT <span class="vip-gold">VIP</span></div>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation Header -->
+    <header class="glass-card border-x-0 border-t-0 py-4 px-6 flex justify-between items-center sticky top-0 z-40">
+        <a href="index.html" class="flex items-center space-x-2 text-sm font-bold text-white hover:text-[var(--accent-cyan)] transition-colors">
+            <i class="fa-solid fa-shield-car text-[var(--accent-cyan)]"></i>
+            <span>DRIVECONNECT <span class="text-blue-500">VIP</span></span>
+        </a>
+        <div class="flex items-center space-x-4 text-xs font-semibold">
+            <a href="index.html" class="text-slate-400 hover:text-white transition-colors"><i class="fa-solid fa-house mr-1"></i> Showroom</a>
+            <a href="manager-crm.html" class="text-slate-400 hover:text-white transition-colors"><i class="fa-solid fa-user-gear mr-1"></i> Dealer Portal</a>
         </div>
-        <nav>
-            <ul class="nav-links" style="display: flex; align-items: center; list-style: none; gap: 20px; margin: 0; padding: 0;">
-                <li><a href="index.html" style="color: #cbd5e1; text-decoration: none; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">INVENTORY</a></li>
-                <li><a href="perks.html" style="color: #cbd5e1; text-decoration: none; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">DEALER PERKS</a></li>
-            </ul>
-        </nav>
     </header>
 
-    <main class="advanced-container">
-        <div style="margin-bottom: 25px;">
-            <a href="index.html" style="color: #3b82f6; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
-                <i class="fa-solid fa-arrow-left"></i> Back to Showroom
-            </a>
-            <h1 style="font-size: 2rem; margin-top: 10px; color: #f8fafc;">Advanced Network Search</h1>
-            <p style="color: #94a3b8; font-size: 0.95rem;">Filter across all specific inventory criteria for precise partner allocations.</p>
+    <!-- Main Workspace Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 space-y-6">
+
+        <!-- Page Header Banner -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
+            <div>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-[var(--accent-cyan)]"></i> Advanced Inventory Search
+                </h1>
+                <p class="text-xs text-[var(--text-muted)] mt-1">Cross-reference active allocation pools, dealership perks, and vehicle specs across our entire network.</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-950/60 px-3 py-1.5 rounded-full border border-emerald-800">
+                <i class="fa-solid fa-circle text-[6px]"></i> Live Network Inventory Synced
+            </div>
         </div>
 
-        <div class="search-panel">
-            <form id="advanced-search-form" onsubmit="handleAdvancedSearch(event)">
-                <div class="form-grid">
-                    <!-- Make -->
-                    <div class="form-group">
-                        <label for="adv-make">Make</label>
-                        <input type="text" id="adv-make" placeholder="e.g. Ford, Chevrolet">
+        <!-- Search & Filter Controls Grid -->
+        <section class="glass-card p-6 rounded-2xl space-y-4 border border-[var(--border-color)]">
+            <form id="search-form" onsubmit="handleSearchSubmit(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                    <!-- Keyword / Free-Text Query -->
+                    <div class="space-y-1 md:col-span-2">
+                        <label class="text-xs font-semibold text-slate-300">Keyword / Model Search</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
+                            <input type="text" id="filter-keyword" placeholder="e.g., Mustang, Dark Horse, AMG, AWD..." class="w-full pl-9 pr-3 py-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-xl text-white text-xs focus:outline-none focus:border-[var(--accent-cyan)]">
+                        </div>
                     </div>
-                    <!-- Model -->
-                    <div class="form-group">
-                        <label for="adv-model">Model</label>
-                        <input type="text" id="adv-model" placeholder="e.g. Escape, Camaro">
-                    </div>
-                    <!-- Trim -->
-                    <div class="form-group">
-                        <label for="adv-trim">Trim</label>
-                        <input type="text" id="adv-trim" placeholder="e.g. Titanium, 2SS">
-                    </div>
-                    <!-- Year -->
-                    <div class="form-group">
-                        <label for="adv-year">Year</label>
-                        <input type="number" id="adv-year" placeholder="e.g. 2024">
-                    </div>
-                    <!-- DealerID -->
-                    <div class="form-group">
-                        <label for="adv-dealerid">Dealer ID</label>
-                        <input type="text" id="adv-dealerid" placeholder="e.g. DLR-101">
-                    </div>
-                    <!-- Price -->
-                    <div class="form-group">
-                        <label for="adv-price">Max Price ($)</label>
-                        <input type="number" id="adv-price" placeholder="e.g. 45000">
-                    </div>
-                    <!-- Transmission -->
-                    <div class="form-group">
-                        <label for="adv-transmission">Transmission</label>
-                        <input type="text" id="adv-transmission" placeholder="e.g. Automatic, Manual">
-                    </div>
-                    <!-- Drivetrain -->
-                    <div class="form-group">
-                        <label for="adv-drivetrain">Drivetrain</label>
-                        <input type="text" id="adv-drivetrain" placeholder="e.g. AWD, RWD, FWD">
-                    </div>
-                    <!-- Motor -->
-                    <div class="form-group">
-                        <label for="adv-motor">Motor / Engine</label>
-                        <input type="text" id="adv-motor" placeholder="e.g. 2.0L EcoBoost, V8">
-                    </div>
-                    <!-- Condition -->
-                    <div class="form-group">
-                        <label for="adv-condition">Condition</label>
-                        <select id="adv-condition">
-                            <option value="">All Network Conditions</option>
-                            <option value="New">New</option>
-                            <option value="Used">Used</option>
-                            <option value="Certified Pre-Owned">Certified Pre-Owned</option>
+
+                    <!-- Make Filter -->
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-300">Make</label>
+                        <select id="filter-make" class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-xl text-white text-xs focus:outline-none focus:border-[var(--accent-cyan)]">
+                            <option value="">All Makes</option>
+                            <option value="Ford">Ford</option>
+                            <option value="Porsche">Porsche</option>
+                            <option value="Mercedes-Benz">Mercedes-Benz</option>
+                            <option value="BMW">BMW</option>
+                            <option value="Subaru">Subaru</option>
+                            <option value="Tesla">Tesla</option>
+                            <option value="Acura">Acura</option>
+                            <option value="Chevrolet">Chevrolet</option>
                         </select>
                     </div>
-                    <!-- Mileage -->
-                    <div class="form-group">
-                        <label for="adv-mileage">Max Mileage</label>
-                        <input type="number" id="adv-mileage" placeholder="e.g. 30000">
-                    </div>
-                    <!-- MPG -->
-                    <div class="form-group">
-                        <label for="adv-mpg">MPG / Efficiency</label>
-                        <input type="text" id="adv-mpg" placeholder="e.g. 28 City / 34 Hwy">
-                    </div>
-                    <!-- ExteriorColor -->
-                    <div class="form-group">
-                        <label for="adv-extcolor">Exterior Color</label>
-                        <input type="text" id="adv-extcolor" placeholder="e.g. Shadow Black, Red">
-                    </div>
-                    <!-- InteriorColor -->
-                    <div class="form-group">
-                        <label for="adv-intcolor">Interior Color</label>
-                        <input type="text" id="adv-intcolor" placeholder="e.g. Ebony Black, Tan">
+
+                    <!-- Max Price Filter -->
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-300">Max Budget / Price</label>
+                        <select id="filter-max-price" class="w-full p-2.5 bg-[#1e293b] border border-[var(--border-color)] rounded-xl text-white text-xs focus:outline-none focus:border-[var(--accent-cyan)]">
+                            <option value="">No Price Limit</option>
+                            <option value="35000">Under $35,000</option>
+                            <option value="50000">Under $50,000</option>
+                            <option value="75000">Under $75,000</option>
+                            <option value="100000">Under $100,000</option>
+                            <option value="150000">Under $150,000</option>
+                            <option value="200000">Under $200,000</option>
+                        </select>
                     </div>
 
-                    <div class="action-bar">
-                        <button type="submit" class="btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search Network Inventory</button>
-                        <a href="advanced-search.html" class="btn-secondary">Reset</a>
-                    </div>
+                </div>
+
+                <!-- Action Button Row -->
+                <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                    <button type="button" onclick="resetFilters()" class="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate"></i> Reset Filters
+                    </button>
+                    <button type="submit" class="bg-[var(--accent-blue)] hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2">
+                        <i class="fa-solid fa-filter"></i> Apply Filters
+                    </button>
                 </div>
             </form>
-        </div>
+        </section>
+
+        <!-- Search Results Listing Section -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-center px-1">
+                <span id="results-count" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Matching Vehicles (0)</span>
+                <span id="active-filter-badge" class="text-xs text-[var(--accent-cyan)] bg-blue-950/60 px-3 py-1 rounded-full border border-blue-800 hidden">Filtered view</span>
+            </div>
+
+            <!-- Vehicle Cards Grid -->
+            <div id="vehicle-results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
+
     </main>
 
-    <footer style="margin-top: 80px; padding: 30px 20px; background: #0f172a; border-top: 1px solid #1e293b; text-align: center; color: #94a3b8; font-size: 0.9rem;">
-        <p>&copy; 2026 DriveConnect VIP. All rights reserved.</p>
-    </footer>
-
+    <!-- JavaScript Application Logic -->
     <script>
-        function handleAdvancedSearch(event) {
-            event.preventDefault();
+        const SHOWROOM_API_URL = "https://script.google.com/macros/s/AKfycbyqnBPGwjy1ElWDC-G-DPMYS8G3xPGZo0WLAvnN1tTm1PUrWN9SWvgCI-gbz9J9IAh2/exec";
 
-            const params = new URLSearchParams();
-            const fields = [
-                'make', 'model', 'trim', 'year', 'dealerid',
-                'price', 'transmission', 'drivetrain', 'motor',
-                'condition', 'mileage', 'mpg', 'extcolor', 'intcolor'
-            ];
+        let masterInventory = [];
 
-            fields.forEach(field => {
-                const inputEl = document.getElementById(`adv-${field}`);
-                if (inputEl && inputEl.value.trim() !== "") {
-                    params.append(field, inputEl.value.trim());
+        document.addEventListener("DOMContentLoaded", async () => {
+            // 1. Extract URL Parameters immediately on load
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryMake = urlParams.get('make') || urlParams.get('Make') || '';
+            const queryKeyword = urlParams.get('keyword') || urlParams.get('vehicle') || urlParams.get('query') || '';
+            const queryMaxPrice = urlParams.get('maxPrice') || urlParams.get('price') || '';
+
+            // 2. Pre-fill filter controls with query values
+            if (queryMake) document.getElementById('filter-make').value = queryMake;
+            if (queryKeyword) document.getElementById('filter-keyword').value = queryKeyword;
+            if (queryMaxPrice) document.getElementById('filter-max-price').value = queryMaxPrice;
+
+            // 3. Load Master Data from backend endpoint
+            await loadNetworkInventory();
+
+            // 4. Run initial filter against parsed parameters
+            applyFilters();
+        });
+
+        // Robust JSONP Fetch Helper to bypass CORS restrictions
+        function fetchJsonp(url, callbackName) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                script.onerror = function(err) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(err);
+                };
+                script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+                document.body.appendChild(script);
+            });
+        }
+
+        async function loadNetworkInventory() {
+            try {
+                const cbName = 'handleInvFetch_' + Math.floor(Math.random() * 100000);
+                const data = await fetchJsonp(`${SHOWROOM_API_URL}`, cbName);
+
+                if (data && data.inventory && Array.isArray(data.inventory)) {
+                    masterInventory = data.inventory;
+                } else {
+                    useFallbackInventory();
                 }
+            } catch (err) {
+                console.warn("Using local catalog fallback due to network response:", err);
+                useFallbackInventory();
+            }
+        }
+
+        function useFallbackInventory() {
+            masterInventory = [
+                { Year: "2024", Make: "Ford", Model: "Mustang Dark Horse", Trim: "V8 Premium", Price: 64500, Mileage: 1200, Dealer: "Northshore Exotic Motors", ImageURL: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=800&q=80", DealerPerk: "Complimentary 3-Year Maintenance Plan" },
+                { Year: "2023", Make: "Porsche", Model: "911 Carrera S", Trim: "PDK", Price: 134500, Mileage: 4800, Dealer: "Metro Luxury Motors", ImageURL: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80", DealerPerk: "Track Day Pass & VIP Ceramic Coating" },
+                { Year: "2024", Make: "Mercedes-Benz", Model: "G-Class G 63 AMG", Trim: "Bi-Turbo", Price: 185000, Mileage: 2100, Dealer: "Metro Luxury Motors", ImageURL: "https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?auto=format&fit=crop&w=800&q=80", DealerPerk: "Free Enclosed Home Delivery" },
+                { Year: "2024", Make: "BMW", Model: "M4 Competition", Trim: "xDrive", Price: 78900, Mileage: 3400, Dealer: "Granite State Auto Group", ImageURL: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80", DealerPerk: "1-Year VIP Tire & Wheel Protection" },
+                { Year: "2024", Make: "Subaru", Model: "WRX Limited", Trim: "6-Speed Manual", Price: 36500, Mileage: 500, Dealer: "Granite State Auto Group", ImageURL: "https://images.unsplash.com/photo-1626668891365-27a961cb2fb9?auto=format&fit=crop&w=800&q=80", DealerPerk: "Complimentary All-Weather Package" }
+            ];
+        }
+
+        function handleSearchSubmit(e) {
+            e.preventDefault();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const selectedMake = (document.getElementById('filter-make').value || '').trim().toLowerCase();
+            const keyword = (document.getElementById('filter-keyword').value || '').trim().toLowerCase();
+            const maxPrice = Number(document.getElementById('filter-max-price').value || 0);
+
+            const filtered = masterInventory.filter(car => {
+                const carMake = String(car.Make || car.make || '').toLowerCase();
+                const carModel = String(car.Model || car.model || '').toLowerCase();
+                const carTrim = String(car.Trim || car.trim || '').toLowerCase();
+                const carYear = String(car.Year || car.year || '').toLowerCase();
+                const fullTitle = `${carYear} ${carMake} ${carModel} ${carTrim}`;
+
+                const rawPrice = Number(car.Price || car.price || 0);
+
+                // 1. Make Filter
+                if (selectedMake && !carMake.includes(selectedMake) && !fullTitle.includes(selectedMake)) {
+                    return false;
+                }
+
+                // 2. Keyword Filter
+                if (keyword && !fullTitle.includes(keyword) && !carModel.includes(keyword)) {
+                    return false;
+                }
+
+                // 3. Max Price Filter
+                if (maxPrice > 0 && rawPrice > maxPrice) {
+                    return false;
+                }
+
+                return true;
             });
 
-            // Passes parameters to index.html where Supabase query filters can read them
-            window.location.href = `index.html?${params.toString()}`;
+            renderResults(filtered);
+
+            // Toggle active filter badge
+            const badge = document.getElementById('active-filter-badge');
+            if (selectedMake || keyword || maxPrice > 0) {
+                badge.classList.remove('hidden');
+                badge.textContent = `Active Filters (${filtered.length} matched)`;
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderResults(inventory) {
+            const grid = document.getElementById('vehicle-results-grid');
+            const countElem = document.getElementById('results-count');
+
+            countElem.textContent = `Matching Vehicles (${inventory.length})`;
+            grid.innerHTML = '';
+
+            if (inventory.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full glass-card p-12 text-center rounded-2xl space-y-3">
+                        <i class="fa-solid fa-car-side text-4xl text-slate-600"></i>
+                        <h3 class="text-base font-bold text-white">No Matching Vehicles Found</h3>
+                        <p class="text-xs text-slate-400 max-w-md mx-auto">We couldn't find any allocations matching your specific criteria. Try adjusting your price range or make selection.</p>
+                        <button onclick="resetFilters()" class="bg-slate-800 hover:bg-slate-700 text-[var(--accent-cyan)] px-4 py-2 rounded-xl text-xs font-semibold border border-slate-700 mt-2 transition">
+                            Reset Search Filters
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            inventory.forEach(car => {
+                const year = car.Year || car.year || '';
+                const make = car.Make || car.make || '';
+                const model = car.Model || car.model || '';
+                const trim = car.Trim || car.trim || '';
+                const title = `${year} ${make} ${model} ${trim}`.trim();
+                const price = Number(car.Price || car.price || 0);
+                const dealer = car.Dealer || car.dealer || car.DealerName || 'Partner Dealer';
+                const perk = car.DealerPerk || car.Perk || car.defaultPerk || 'Complimentary VIP Concierge Service';
+                const photoUrl = (car.ImageURL && String(car.ImageURL).startsWith('http'))
+                    ? car.ImageURL
+                    : 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80';
+
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl overflow-hidden hover:border-[var(--accent-cyan)] transition-all flex flex-col justify-between shadow-lg";
+                card.innerHTML = `
+                    <div>
+                        <div class="relative h-48 bg-slate-800 overflow-hidden">
+                            <img src="${photoUrl}" alt="${title}" class="w-full h-full object-cover">
+                            <div class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-full border border-slate-700 text-xs font-extrabold text-emerald-400">
+                                $${price > 0 ? price.toLocaleString() : 'Inquire'}
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--accent-cyan)]">${dealer}</span>
+                                <h3 class="text-base font-extrabold text-white mt-0.5">${title}</h3>
+                            </div>
+                            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-xs space-y-1">
+                                <div class="text-slate-400"><i class="fa-solid fa-gift text-amber-400 mr-1.5"></i> <strong class="text-slate-200">Exclusive Perk:</strong></div>
+                                <div class="text-slate-300 font-medium">${perk}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0">
+                        <a href="index.html?vehicle=${encodeURIComponent(title)}&dealer=${encodeURIComponent(dealer)}" class="w-full bg-[var(--accent-blue)] hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow">
+                            <i class="fa-solid fa-ticket"></i> Claim VIP Pass & Inquiry
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-keyword').value = '';
+            document.getElementById('filter-make').value = '';
+            document.getElementById('filter-max-price').value = '';
+            applyFilters();
         }
     </script>
 </body>
